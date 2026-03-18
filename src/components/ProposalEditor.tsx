@@ -185,7 +185,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       const jsPDF = (await import("jspdf")).default;
 
       const element = previewRef.current;
-      
+
       // Capture the preview at high resolution
       const canvas = await html2canvas(element, {
         scale: 2,
@@ -202,6 +202,41 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       const pdfWidth = 210;
       const pdfHeight = 297;
 
+      // Header/footer dimensions in mm (proportional to A4 width)
+      const headerHeight = 18;
+      const footerHeight = 22;
+      const contentMarginTop = 6;
+      const contentMarginBottom = 6;
+      const contentAreaHeight = pdfHeight - headerHeight - footerHeight - contentMarginTop - contentMarginBottom;
+
+      // Load header and footer images
+      const loadImage = (src: string): Promise<HTMLImageElement> => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = src;
+        });
+      };
+
+      const headerImg = await loadImage(headerBanner);
+      const footerImg = await loadImage(footerBanner);
+
+      // Convert header/footer to canvas data URLs
+      const headerCanvas = document.createElement("canvas");
+      headerCanvas.width = headerImg.naturalWidth;
+      headerCanvas.height = headerImg.naturalHeight;
+      const hCtx = headerCanvas.getContext("2d");
+      if (hCtx) hCtx.drawImage(headerImg, 0, 0);
+      const headerData = headerCanvas.toDataURL("image/png");
+
+      const footerCanvas = document.createElement("canvas");
+      footerCanvas.width = footerImg.naturalWidth;
+      footerCanvas.height = footerImg.naturalHeight;
+      const fCtx = footerCanvas.getContext("2d");
+      if (fCtx) fCtx.drawImage(footerImg, 0, 0);
+      const footerData = footerCanvas.toDataURL("image/png");
+
       const ratio = pdfWidth / imgWidth;
       const scaledHeight = imgHeight * ratio;
 
@@ -211,12 +246,16 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         format: "a4",
       });
 
-      // If content fits on one page
-      if (scaledHeight <= pdfHeight) {
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, scaledHeight);
+      // Calculate how much of the content image fits per page
+      const contentPixelsPerPage = contentAreaHeight / ratio;
+
+      if (scaledHeight <= contentAreaHeight) {
+        // Single page
+        pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
+        pdf.addImage(imgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, scaledHeight);
+        pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
       } else {
-        // Multi-page: slice the canvas into page-sized chunks
-        const pageCanvasHeight = pdfHeight / ratio;
+        // Multi-page
         let remainingHeight = imgHeight;
         let position = 0;
         let page = 0;
@@ -224,14 +263,18 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         while (remainingHeight > 0) {
           if (page > 0) pdf.addPage();
 
-          const sliceHeight = Math.min(pageCanvasHeight, remainingHeight);
-          
-          // Create a canvas for this page slice
+          // Add header
+          pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
+
+          // Add content slice
+          const sliceHeight = Math.min(contentPixelsPerPage, remainingHeight);
           const pageCanvas = document.createElement("canvas");
           pageCanvas.width = imgWidth;
           pageCanvas.height = sliceHeight;
           const ctx = pageCanvas.getContext("2d");
           if (ctx) {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, imgWidth, sliceHeight);
             ctx.drawImage(
               canvas,
               0, position, imgWidth, sliceHeight,
@@ -241,7 +284,10 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
 
           const pageImgData = pageCanvas.toDataURL("image/png");
           const pageScaledHeight = sliceHeight * ratio;
-          pdf.addImage(pageImgData, "PNG", 0, 0, pdfWidth, pageScaledHeight);
+          pdf.addImage(pageImgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, pageScaledHeight);
+
+          // Add footer
+          pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
 
           remainingHeight -= sliceHeight;
           position += sliceHeight;
