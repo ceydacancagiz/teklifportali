@@ -330,8 +330,8 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="TRY">₺ Türk Lirası (TRY)</SelectItem>
                     <SelectItem value="USD">$ US Dollar (USD)</SelectItem>
+                    <SelectItem value="TRY">₺ Türk Lirası (TRY)</SelectItem>
                     <SelectItem value="EUR">€ Euro (EUR)</SelectItem>
                   </SelectContent>
                 </Select>
