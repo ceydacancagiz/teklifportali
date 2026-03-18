@@ -1,5 +1,7 @@
 import { useState, useRef } from "react";
 import { ArrowLeft, Download, Plus, Trash2, User, Package, Settings, ClipboardList } from "lucide-react";
+import headerBanner from "@/assets/header-banner.png";
+import footerBanner from "@/assets/footer-banner.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
