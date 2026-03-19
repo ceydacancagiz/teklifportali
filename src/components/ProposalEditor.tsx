@@ -257,27 +257,35 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       // Calculate how much of the content image fits per page (in pixels)
       const contentPixelsPerPage = contentAreaHeight / ratio;
 
-      // Find safe break points by scanning for horizontal white/light lines
+      // Find safe break points by scanning for rows that are between table entries
       const findSafeBreakPoint = (targetY: number, searchRange: number): number => {
         const ctx = canvas.getContext("2d");
         if (!ctx) return targetY;
 
-        // Search backwards from targetY for a row that is mostly uniform (white/light background)
+        // Search backwards from targetY for a fully light/white horizontal line
         for (let y = Math.floor(targetY); y > targetY - searchRange && y > 0; y--) {
           const rowData = ctx.getImageData(0, y, imgWidth, 1).data;
-          let isUniform = true;
-          // Check if this row is a border/gap between table rows (light colored)
           let lightPixels = 0;
           for (let x = 0; x < imgWidth * 4; x += 4) {
             const r = rowData[x], g = rowData[x + 1], b = rowData[x + 2];
-            if (r > 200 && g > 200 && b > 200) lightPixels++;
+            if (r > 210 && g > 210 && b > 210) lightPixels++;
           }
-          // If >90% of pixels are light, this is a good break point
-          if (lightPixels / imgWidth > 0.9) {
-            return y;
+          // Need 95%+ light pixels for a clean break between rows
+          if (lightPixels / imgWidth > 0.95) {
+            // Verify the next few rows are also light (we're in a gap, not mid-text)
+            let isGap = true;
+            for (let check = 1; check <= 2 && y + check < imgHeight; check++) {
+              const checkData = ctx.getImageData(0, y + check, imgWidth, 1).data;
+              let checkLight = 0;
+              for (let x = 0; x < imgWidth * 4; x += 4) {
+                if (checkData[x] > 210 && checkData[x + 1] > 210 && checkData[x + 2] > 210) checkLight++;
+              }
+              if (checkLight / imgWidth < 0.85) { isGap = false; break; }
+            }
+            if (isGap) return y;
           }
         }
-        return targetY; // fallback
+        return targetY;
       };
 
       if (scaledHeight <= contentAreaHeight) {
@@ -300,8 +308,8 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
           if (sliceEnd >= imgHeight) {
             sliceEnd = imgHeight;
           } else {
-            // Find a safe break point (search up to 80px back to avoid splitting a row)
-            sliceEnd = findSafeBreakPoint(sliceEnd, 80);
+            // Find a safe break point (search up to 150px back for clean row boundaries)
+            sliceEnd = findSafeBreakPoint(sliceEnd, 150);
           }
 
           const sliceHeight = sliceEnd - position;

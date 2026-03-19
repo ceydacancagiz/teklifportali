@@ -160,7 +160,7 @@ const ProposalPreview = forwardRef<HTMLDivElement, Props>(
                     </div>
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8px" }}>
                       <thead>
-                        <tr style={{ backgroundColor: "#e8e8e8" }}>
+                        <tr style={{ backgroundColor: "#e8e8e8", lineHeight: "1.6" }}>
                           <th style={{ textAlign: "left", padding: "2px 3px", fontWeight: "bold", fontSize: "8px" }}>MODÜL</th>
                           <th style={{ textAlign: "left", padding: "2px 3px", fontWeight: "bold", fontSize: "8px" }}>AÇIKLAMA</th>
                           {data.showSkuColumn && (
@@ -179,19 +179,21 @@ const ProposalPreview = forwardRef<HTMLDivElement, Props>(
                             style={{
                               borderBottom: "1px solid #ddd",
                               backgroundColor: kitIndex % 2 === 0 ? "#ffffff" : "#f5f5f5",
+                              lineHeight: "1.6",
+                              verticalAlign: "middle",
                             }}
                           >
-                            <td style={{ padding: "2px 3px", fontSize: "8px", fontWeight: kitItem.module ? "600" : "normal" }}>
+                            <td style={{ padding: "3px 3px", fontSize: "8px", fontWeight: kitItem.module ? "600" : "normal", verticalAlign: "middle" }}>
                               {kitItem.module || "-"}
                             </td>
-                            <td style={{ padding: "2px 3px", fontSize: "8px" }}>{kitItem.description || "-"}</td>
+                            <td style={{ padding: "3px 3px", fontSize: "8px", verticalAlign: "middle" }}>{kitItem.description || "-"}</td>
                             {data.showSkuColumn && (
-                              <td style={{ padding: "2px 3px", fontSize: "8px" }}>{kitItem.sku || "-"}</td>
+                              <td style={{ padding: "3px 3px", fontSize: "8px", verticalAlign: "middle" }}>{kitItem.sku || "-"}</td>
                             )}
                             {data.showTaxColumn && (
-                              <td style={{ padding: "2px 3px", fontSize: "8px" }}>{kitItem.taxType || "-"}</td>
+                              <td style={{ padding: "3px 3px", fontSize: "8px", verticalAlign: "middle" }}>{kitItem.taxType || "-"}</td>
                             )}
-                            <td style={{ padding: "2px 3px", fontSize: "8px", textAlign: "center" }}>{kitItem.quantity}</td>
+                            <td style={{ padding: "3px 3px", fontSize: "8px", textAlign: "center", verticalAlign: "middle" }}>{kitItem.quantity}</td>
                           </tr>
                         ))}
                       </tbody>
