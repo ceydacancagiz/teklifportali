@@ -308,8 +308,8 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
           if (sliceEnd >= imgHeight) {
             sliceEnd = imgHeight;
           } else {
-            // Find a safe break point (search up to 80px back to avoid splitting a row)
-            sliceEnd = findSafeBreakPoint(sliceEnd, 80);
+            // Find a safe break point (search up to 150px back for clean row boundaries)
+            sliceEnd = findSafeBreakPoint(sliceEnd, 150);
           }
 
           const sliceHeight = sliceEnd - position;

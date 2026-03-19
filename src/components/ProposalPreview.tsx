@@ -186,14 +186,14 @@ const ProposalPreview = forwardRef<HTMLDivElement, Props>(
                             <td style={{ padding: "3px 3px", fontSize: "8px", fontWeight: kitItem.module ? "600" : "normal", verticalAlign: "middle" }}>
                               {kitItem.module || "-"}
                             </td>
-                            <td style={{ padding: "2px 3px", fontSize: "8px" }}>{kitItem.description || "-"}</td>
+                            <td style={{ padding: "3px 3px", fontSize: "8px", verticalAlign: "middle" }}>{kitItem.description || "-"}</td>
                             {data.showSkuColumn && (
-                              <td style={{ padding: "2px 3px", fontSize: "8px" }}>{kitItem.sku || "-"}</td>
+                              <td style={{ padding: "3px 3px", fontSize: "8px", verticalAlign: "middle" }}>{kitItem.sku || "-"}</td>
                             )}
                             {data.showTaxColumn && (
-                              <td style={{ padding: "2px 3px", fontSize: "8px" }}>{kitItem.taxType || "-"}</td>
+                              <td style={{ padding: "3px 3px", fontSize: "8px", verticalAlign: "middle" }}>{kitItem.taxType || "-"}</td>
                             )}
-                            <td style={{ padding: "2px 3px", fontSize: "8px", textAlign: "center" }}>{kitItem.quantity}</td>
+                            <td style={{ padding: "3px 3px", fontSize: "8px", textAlign: "center", verticalAlign: "middle" }}>{kitItem.quantity}</td>
                           </tr>
                         ))}
                       </tbody>
