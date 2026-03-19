@@ -186,13 +186,21 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
 
       const element = previewRef.current;
 
+      // Force the element to render at fixed width for consistent PDF output
+      const originalWidth = element.style.width;
+      element.style.width = "794px";
+
       // Capture the preview at high resolution
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
+        width: 794,
       });
+
+      // Restore original width
+      element.style.width = originalWidth;
 
       const imgData = canvas.toDataURL("image/png");
       const imgWidth = canvas.width;
