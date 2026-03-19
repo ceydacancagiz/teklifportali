@@ -179,9 +179,11 @@ const ProposalPreview = forwardRef<HTMLDivElement, Props>(
                             style={{
                               borderBottom: "1px solid #ddd",
                               backgroundColor: kitIndex % 2 === 0 ? "#ffffff" : "#f5f5f5",
+                              lineHeight: "1.6",
+                              verticalAlign: "middle",
                             }}
                           >
-                            <td style={{ padding: "2px 3px", fontSize: "8px", fontWeight: kitItem.module ? "600" : "normal" }}>
+                            <td style={{ padding: "3px 3px", fontSize: "8px", fontWeight: kitItem.module ? "600" : "normal", verticalAlign: "middle" }}>
                               {kitItem.module || "-"}
                             </td>
                             <td style={{ padding: "2px 3px", fontSize: "8px" }}>{kitItem.description || "-"}</td>
