@@ -160,7 +160,7 @@ const ProposalPreview = forwardRef<HTMLDivElement, Props>(
                     </div>
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8px" }}>
                       <thead>
-                        <tr style={{ backgroundColor: "#e8e8e8" }}>
+                        <tr style={{ backgroundColor: "#e8e8e8", lineHeight: "1.6" }}>
                           <th style={{ textAlign: "left", padding: "2px 3px", fontWeight: "bold", fontSize: "8px" }}>MODÜL</th>
                           <th style={{ textAlign: "left", padding: "2px 3px", fontWeight: "bold", fontSize: "8px" }}>AÇIKLAMA</th>
                           {data.showSkuColumn && (
