@@ -246,8 +246,31 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         format: "a4",
       });
 
-      // Calculate how much of the content image fits per page
+      // Calculate how much of the content image fits per page (in pixels)
       const contentPixelsPerPage = contentAreaHeight / ratio;
+
+      // Find safe break points by scanning for horizontal white/light lines
+      const findSafeBreakPoint = (targetY: number, searchRange: number): number => {
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return targetY;
+
+        // Search backwards from targetY for a row that is mostly uniform (white/light background)
+        for (let y = Math.floor(targetY); y > targetY - searchRange && y > 0; y--) {
+          const rowData = ctx.getImageData(0, y, imgWidth, 1).data;
+          let isUniform = true;
+          // Check if this row is a border/gap between table rows (light colored)
+          let lightPixels = 0;
+          for (let x = 0; x < imgWidth * 4; x += 4) {
+            const r = rowData[x], g = rowData[x + 1], b = rowData[x + 2];
+            if (r > 200 && g > 200 && b > 200) lightPixels++;
+          }
+          // If >90% of pixels are light, this is a good break point
+          if (lightPixels / imgWidth > 0.9) {
+            return y;
+          }
+        }
+        return targetY; // fallback
+      };
 
       if (scaledHeight <= contentAreaHeight) {
         // Single page
@@ -255,19 +278,26 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         pdf.addImage(imgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, scaledHeight);
         pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
       } else {
-        // Multi-page
-        let remainingHeight = imgHeight;
+        // Multi-page with smart row-aware splitting
         let position = 0;
         let page = 0;
 
-        while (remainingHeight > 0) {
+        while (position < imgHeight) {
           if (page > 0) pdf.addPage();
 
           // Add header
           pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
 
-          // Add content slice
-          const sliceHeight = Math.min(contentPixelsPerPage, remainingHeight);
+          let sliceEnd = position + contentPixelsPerPage;
+          if (sliceEnd >= imgHeight) {
+            sliceEnd = imgHeight;
+          } else {
+            // Find a safe break point (search up to 80px back to avoid splitting a row)
+            sliceEnd = findSafeBreakPoint(sliceEnd, 80);
+          }
+
+          const sliceHeight = sliceEnd - position;
+
           const pageCanvas = document.createElement("canvas");
           pageCanvas.width = imgWidth;
           pageCanvas.height = sliceHeight;
@@ -289,8 +319,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
           // Add footer
           pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
 
-          remainingHeight -= sliceHeight;
-          position += sliceHeight;
+          position = sliceEnd;
           page++;
         }
       }
