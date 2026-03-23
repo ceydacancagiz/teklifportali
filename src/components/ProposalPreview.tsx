@@ -60,9 +60,9 @@ const ProposalPreview = forwardRef<HTMLDivElement, Props>(
               </tr>
             </thead>
             <tbody>
-              {data.lineItems.map((item) => (
+              {data.lineItems.map((item, index) => (
                 <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
-                  <td style={{ padding: "4px 4px", fontSize: "10px" }}>{item.description || "-"}</td>
+                  <td style={{ padding: "4px 4px", fontSize: "10px", fontWeight: "bold" }}>{index + 1}. {item.description || "-"}</td>
                   <td style={{ padding: "4px 4px", fontSize: "10px", textAlign: "center" }}>{item.quantity}</td>
                   <td style={{ padding: "4px 4px", fontSize: "10px", textAlign: "right" }}>{formatCurrency(item.unitPrice)}</td>
                   <td style={{ padding: "4px 4px", fontSize: "10px", textAlign: "right" }}>{formatCurrency(item.quantity * item.unitPrice)}</td>
