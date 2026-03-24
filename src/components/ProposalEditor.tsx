@@ -771,9 +771,16 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         </Button>
       </div>
 
-      {/* Right Panel - Preview */}
+      {/* Right Panel - Paginated Preview */}
       <div className="hidden lg:block w-1/2 p-6 overflow-auto max-h-screen bg-muted">
-        <div className="max-w-[600px] mx-auto shadow-lg">
+        <div className="max-w-[600px] mx-auto">
+          <style>{`
+            [data-page] {
+              box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+              margin-bottom: 24px;
+              border: 1px solid #d0d0d0;
+            }
+          `}</style>
           <ProposalPreview
             ref={previewRef}
             data={data}
