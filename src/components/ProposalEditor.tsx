@@ -184,38 +184,18 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       const html2canvas = (await import("html2canvas")).default;
       const jsPDF = (await import("jspdf")).default;
 
-      const element = previewRef.current;
+      const container = previewRef.current;
 
-      // Force the element to render at fixed width for consistent PDF output
-      const originalWidth = element.style.width;
-      element.style.width = "794px";
-
-      // Capture the preview at high resolution
-      const canvas = await html2canvas(element, {
-        scale: 3,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-        width: 794,
-      });
-
-      // Restore original width
-      element.style.width = originalWidth;
-
-      const imgData = canvas.toDataURL("image/png");
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
+      // Find all page elements
+      const pageElements = container.querySelectorAll("[data-page]") as NodeListOf<HTMLElement>;
 
       // A4 dimensions in mm
       const pdfWidth = 210;
       const pdfHeight = 297;
-
-      // Header/footer dimensions in mm (proportional to A4 width)
       const headerHeight = 18;
       const footerHeight = 22;
       const contentMarginTop = 6;
-      const contentMarginBottom = 6;
-      const contentAreaHeight = pdfHeight - headerHeight - footerHeight - contentMarginTop - contentMarginBottom;
+      const contentAreaHeight = pdfHeight - headerHeight - footerHeight - contentMarginTop - 6;
 
       // Load header and footer images
       const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -230,7 +210,6 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       const headerImg = await loadImage(headerBanner);
       const footerImg = await loadImage(footerBanner);
 
-      // Convert header/footer to canvas data URLs
       const headerCanvas = document.createElement("canvas");
       headerCanvas.width = headerImg.naturalWidth;
       headerCanvas.height = headerImg.naturalHeight;
@@ -245,24 +224,16 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       if (fCtx) fCtx.drawImage(footerImg, 0, 0);
       const footerData = footerCanvas.toDataURL("image/png");
 
-      const ratio = pdfWidth / imgWidth;
-      const scaledHeight = imgHeight * ratio;
-
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
       });
 
-      // Calculate how much of the content image fits per page (in pixels)
-      const contentPixelsPerPage = contentAreaHeight / ratio;
-
-      // Find safe break points by scanning for rows that are between table entries
-      const findSafeBreakPoint = (targetY: number, searchRange: number): number => {
+      // Find safe break points for kit list pages
+      const findSafeBreakPoint = (canvas: HTMLCanvasElement, targetY: number, searchRange: number, imgWidth: number): number => {
         const ctx = canvas.getContext("2d");
         if (!ctx) return targetY;
-
-        // Search backwards from targetY for a fully light/white horizontal line
         for (let y = Math.floor(targetY); y > targetY - searchRange && y > 0; y--) {
           const rowData = ctx.getImageData(0, y, imgWidth, 1).data;
           let lightPixels = 0;
@@ -270,11 +241,9 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
             const r = rowData[x], g = rowData[x + 1], b = rowData[x + 2];
             if (r > 210 && g > 210 && b > 210) lightPixels++;
           }
-          // Need 95%+ light pixels for a clean break between rows
           if (lightPixels / imgWidth > 0.95) {
-            // Verify the next few rows are also light (we're in a gap, not mid-text)
             let isGap = true;
-            for (let check = 1; check <= 2 && y + check < imgHeight; check++) {
+            for (let check = 1; check <= 2 && y + check < canvas.height; check++) {
               const checkData = ctx.getImageData(0, y + check, imgWidth, 1).data;
               let checkLight = 0;
               for (let x = 0; x < imgWidth * 4; x += 4) {
@@ -288,55 +257,69 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         return targetY;
       };
 
-      if (scaledHeight <= contentAreaHeight) {
-        // Single page
-        pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
-        pdf.addImage(imgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, scaledHeight);
-        pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
-      } else {
-        // Multi-page with smart row-aware splitting
-        let position = 0;
-        let page = 0;
+      let isFirstPdfPage = true;
 
-        while (position < imgHeight) {
-          if (page > 0) pdf.addPage();
+      for (const pageEl of Array.from(pageElements)) {
+        const originalWidth = pageEl.style.width;
+        pageEl.style.width = "794px";
 
-          // Add header
+        const canvas = await html2canvas(pageEl, {
+          scale: 3,
+          useCORS: true,
+          logging: false,
+          backgroundColor: "#ffffff",
+          width: 794,
+        });
+
+        pageEl.style.width = originalWidth;
+
+        const imgData = canvas.toDataURL("image/png");
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = pdfWidth / imgWidth;
+        const scaledHeight = imgHeight * ratio;
+        const contentPixelsPerPage = contentAreaHeight / ratio;
+
+        if (scaledHeight <= contentAreaHeight) {
+          // Fits in one PDF page
+          if (!isFirstPdfPage) pdf.addPage();
           pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
-
-          let sliceEnd = position + contentPixelsPerPage;
-          if (sliceEnd >= imgHeight) {
-            sliceEnd = imgHeight;
-          } else {
-            // Find a safe break point (search up to 150px back for clean row boundaries)
-            sliceEnd = findSafeBreakPoint(sliceEnd, 150);
-          }
-
-          const sliceHeight = sliceEnd - position;
-
-          const pageCanvas = document.createElement("canvas");
-          pageCanvas.width = imgWidth;
-          pageCanvas.height = sliceHeight;
-          const ctx = pageCanvas.getContext("2d");
-          if (ctx) {
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, imgWidth, sliceHeight);
-            ctx.drawImage(
-              canvas,
-              0, position, imgWidth, sliceHeight,
-              0, 0, imgWidth, sliceHeight
-            );
-          }
-
-          const pageImgData = pageCanvas.toDataURL("image/png");
-          const pageScaledHeight = sliceHeight * ratio;
-          pdf.addImage(pageImgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, pageScaledHeight);
-
-          // Add footer
+          pdf.addImage(imgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, scaledHeight);
           pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
+          isFirstPdfPage = false;
+        } else {
+          // Multi-page splitting for this section
+          let position = 0;
+          while (position < imgHeight) {
+            if (!isFirstPdfPage) pdf.addPage();
+            pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
 
-          position = sliceEnd;
-          page++;
+            let sliceEnd = position + contentPixelsPerPage;
+            if (sliceEnd >= imgHeight) {
+              sliceEnd = imgHeight;
+            } else {
+              sliceEnd = findSafeBreakPoint(canvas, sliceEnd, 150, imgWidth);
+            }
+
+            const sliceHeight = sliceEnd - position;
+            const pageCanvas = document.createElement("canvas");
+            pageCanvas.width = imgWidth;
+            pageCanvas.height = sliceHeight;
+            const ctx = pageCanvas.getContext("2d");
+            if (ctx) {
+              ctx.fillStyle = "#ffffff";
+              ctx.fillRect(0, 0, imgWidth, sliceHeight);
+              ctx.drawImage(canvas, 0, position, imgWidth, sliceHeight, 0, 0, imgWidth, sliceHeight);
+            }
+
+            const pageImgData = pageCanvas.toDataURL("image/png");
+            const pageScaledHeight = sliceHeight * ratio;
+            pdf.addImage(pageImgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, pageScaledHeight);
+            pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
+
+            position = sliceEnd;
+            isFirstPdfPage = false;
+          }
         }
       }
 
@@ -788,9 +771,16 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         </Button>
       </div>
 
-      {/* Right Panel - Preview */}
+      {/* Right Panel - Paginated Preview */}
       <div className="hidden lg:block w-1/2 p-6 overflow-auto max-h-screen bg-muted">
-        <div className="max-w-[600px] mx-auto shadow-lg">
+        <div className="max-w-[600px] mx-auto">
+          <style>{`
+            [data-page] {
+              box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+              margin-bottom: 24px;
+              border: 1px solid #d0d0d0;
+            }
+          `}</style>
           <ProposalPreview
             ref={previewRef}
             data={data}
