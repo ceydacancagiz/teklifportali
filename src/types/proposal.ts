@@ -36,6 +36,7 @@ export interface ProposalData {
   address: string;
   showSkuColumn: boolean;
   showTaxColumn: boolean;
+  kitListScale: number;
 }
 
 export interface Proposal {

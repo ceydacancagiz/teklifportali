@@ -9,8 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
 import ProposalPreview from "@/components/ProposalPreview";
 import type { ProposalData, LineItem, KitListItem } from "@/types/proposal";
+import { CONTENT_PAGE_HEIGHT, CONTENT_PAGE_WIDTH, getFittedKitListScale } from "@/lib/proposal-layout";
 
 interface Props {
   onBack: () => void;
@@ -56,7 +58,12 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       "Yukarı Dudullu Mh. Necip Fazıl Blv. Keyap Sit. D blk No:60 Ümraniye, İST",
     showSkuColumn: proposal?.showSkuColumn ?? true,
     showTaxColumn: proposal?.showTaxColumn ?? true,
+    kitListScale: proposal?.kitListScale ?? 1,
   });
+
+  const overflowingKitLists = data.lineItems.filter(
+    (item) => item.kitList.length > 0 && getFittedKitListScale(item, data.kitListScale) < data.kitListScale - 0.01
+  );
 
   const updateField = (field: keyof ProposalData, value: any) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -230,97 +237,30 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         format: "a4",
       });
 
-      // Find safe break points for kit list pages
-      const findSafeBreakPoint = (canvas: HTMLCanvasElement, targetY: number, searchRange: number, imgWidth: number): number => {
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return targetY;
-        for (let y = Math.floor(targetY); y > targetY - searchRange && y > 0; y--) {
-          const rowData = ctx.getImageData(0, y, imgWidth, 1).data;
-          let lightPixels = 0;
-          for (let x = 0; x < imgWidth * 4; x += 4) {
-            const r = rowData[x], g = rowData[x + 1], b = rowData[x + 2];
-            if (r > 210 && g > 210 && b > 210) lightPixels++;
-          }
-          if (lightPixels / imgWidth > 0.95) {
-            let isGap = true;
-            for (let check = 1; check <= 2 && y + check < canvas.height; check++) {
-              const checkData = ctx.getImageData(0, y + check, imgWidth, 1).data;
-              let checkLight = 0;
-              for (let x = 0; x < imgWidth * 4; x += 4) {
-                if (checkData[x] > 210 && checkData[x + 1] > 210 && checkData[x + 2] > 210) checkLight++;
-              }
-              if (checkLight / imgWidth < 0.85) { isGap = false; break; }
-            }
-            if (isGap) return y;
-          }
-        }
-        return targetY;
-      };
-
       let isFirstPdfPage = true;
 
       for (const pageEl of Array.from(pageElements)) {
         const originalWidth = pageEl.style.width;
-        pageEl.style.width = "794px";
+        pageEl.style.width = `${CONTENT_PAGE_WIDTH}px`;
 
         const canvas = await html2canvas(pageEl, {
           scale: 3,
           useCORS: true,
           logging: false,
-          backgroundColor: "#ffffff",
-          width: 794,
+          backgroundColor: "hsl(0 0% 100%)",
+          width: CONTENT_PAGE_WIDTH,
+          height: CONTENT_PAGE_HEIGHT,
         });
 
         pageEl.style.width = originalWidth;
 
         const imgData = canvas.toDataURL("image/png");
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-        const ratio = pdfWidth / imgWidth;
-        const scaledHeight = imgHeight * ratio;
-        const contentPixelsPerPage = contentAreaHeight / ratio;
 
-        if (scaledHeight <= contentAreaHeight) {
-          // Fits in one PDF page
-          if (!isFirstPdfPage) pdf.addPage();
-          pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
-          pdf.addImage(imgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, scaledHeight);
-          pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
-          isFirstPdfPage = false;
-        } else {
-          // Multi-page splitting for this section
-          let position = 0;
-          while (position < imgHeight) {
-            if (!isFirstPdfPage) pdf.addPage();
-            pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
-
-            let sliceEnd = position + contentPixelsPerPage;
-            if (sliceEnd >= imgHeight) {
-              sliceEnd = imgHeight;
-            } else {
-              sliceEnd = findSafeBreakPoint(canvas, sliceEnd, 150, imgWidth);
-            }
-
-            const sliceHeight = sliceEnd - position;
-            const pageCanvas = document.createElement("canvas");
-            pageCanvas.width = imgWidth;
-            pageCanvas.height = sliceHeight;
-            const ctx = pageCanvas.getContext("2d");
-            if (ctx) {
-              ctx.fillStyle = "#ffffff";
-              ctx.fillRect(0, 0, imgWidth, sliceHeight);
-              ctx.drawImage(canvas, 0, position, imgWidth, sliceHeight, 0, 0, imgWidth, sliceHeight);
-            }
-
-            const pageImgData = pageCanvas.toDataURL("image/png");
-            const pageScaledHeight = sliceHeight * ratio;
-            pdf.addImage(pageImgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, pageScaledHeight);
-            pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
-
-            position = sliceEnd;
-            isFirstPdfPage = false;
-          }
-        }
+        if (!isFirstPdfPage) pdf.addPage();
+        pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
+        pdf.addImage(imgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, contentAreaHeight);
+        pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
+        isFirstPdfPage = false;
       }
 
       pdf.save(
@@ -521,6 +461,28 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
                 />
                 <span className="text-sm">Vergi Türü</span>
               </div>
+            </div>
+
+            <div className="mb-4 rounded-lg border border-border bg-background p-3">
+              <div className="flex items-center justify-between gap-4 mb-2">
+                <Label className="text-sm font-medium">Kit list sayfa boyutu</Label>
+                <span className="text-xs text-muted-foreground">%{Math.round(data.kitListScale * 100)}</span>
+              </div>
+              <Slider
+                value={[data.kitListScale]}
+                min={0.65}
+                max={1.15}
+                step={0.01}
+                onValueChange={([value]) => updateField("kitListScale", value)}
+              />
+              <p className="mt-2 text-xs text-muted-foreground">
+                Preview ve PDF artık aynı sayfa bölünmesini gösterir. Kit listler tek parça kalır; gerekirse bu boyutu küçültün.
+              </p>
+              {overflowingKitLists.length > 0 && (
+                <p className="mt-2 text-xs font-medium text-destructive">
+                  Tek sayfaya sığması için otomatik küçülen kit listler: {overflowingKitLists.map((item, index) => item.description || `Kalem ${index + 1}`).join(", ")}
+                </p>
+              )}
             </div>
 
             {data.lineItems.map((item, index) => (
@@ -776,9 +738,9 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         <div className="max-w-[600px] mx-auto">
           <style>{`
             [data-page] {
-              box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+              box-shadow: 0 2px 12px hsl(var(--foreground) / 0.12);
               margin-bottom: 24px;
-              border: 1px solid #d0d0d0;
+              border: 1px solid hsl(var(--border));
             }
           `}</style>
           <ProposalPreview
