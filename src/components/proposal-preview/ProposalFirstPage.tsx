@@ -53,7 +53,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
           <div style={{ marginBottom: `${customerBottom}px` }}>
             <div style={{ fontSize: "15px", marginBottom: "8px", fontWeight: 600 }}>Sayın</div>
             <div style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2px" }}>
-              {data.customerName || "Müşteri Adı"}
+              {data.customerName || "Müşteri Adı"},
             </div>
           </div>
 
@@ -91,41 +91,46 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                     GENEL TOPLAM
                   </td>
                   <td style={{ padding: "10px 4px 0", fontSize: "13px", fontWeight: 700, textAlign: "right" }}>
-                    {formatCurrency(calculateTotal())}
+                    <span style={{
+                      border: "2px solid hsl(0 80% 45%)",
+                      color: "hsl(0 80% 45%)",
+                      padding: "4px 10px",
+                      display: "inline-block",
+                    }}>
+                      {formatCurrency(calculateTotal())}
+                    </span>
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: data.contactName || data.contactTitle || data.contactPhone || data.contactEmail ? "1.1fr 0.9fr" : "1fr", gap: "28px", alignItems: "start" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              <div>
-                <h3 style={{ fontWeight: 700, fontSize: "12px", marginBottom: "5px" }}>FİYATLAR VE ÖDEME</h3>
-                <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "8px" }} />
-                <p style={{ fontSize: "10px", lineHeight: 1.6, whiteSpace: "pre-line", fontWeight: 500 }}>
-                  {data.paymentTerms}
-                </p>
-              </div>
-
-              <div>
-                <h3 style={{ fontWeight: 700, fontSize: "12px", marginBottom: "5px" }}>GEÇERLİLİK SÜRESİ</h3>
-                <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "8px" }} />
-                <p style={{ fontSize: "10px", lineHeight: 1.6, fontWeight: 500 }}>{data.validityPeriod}</p>
-              </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div>
+              <h3 style={{ fontWeight: 700, fontSize: "12px", marginBottom: "5px" }}>FİYATLAR VE ÖDEME</h3>
+              <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "8px" }} />
+              <p style={{ fontSize: "10px", lineHeight: 1.6, whiteSpace: "pre-line", fontWeight: 500 }}>
+                {data.paymentTerms}
+              </p>
             </div>
 
-            {(data.contactName || data.contactTitle || data.contactPhone || data.contactEmail) && (
-              <div style={{ alignSelf: "end" }}>
-                <h3 style={{ fontWeight: 700, fontSize: "12px", marginBottom: "5px" }}>ŞİRKET YETKİLİ BİLGİLERİ</h3>
-                <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "8px" }} />
-                {data.contactName && <p style={{ fontSize: "10px", fontWeight: 700, marginBottom: "4px" }}>{data.contactName}</p>}
-                {data.contactTitle && <p style={{ fontSize: "10px", fontStyle: "italic", marginBottom: "4px" }}>{data.contactTitle}</p>}
-                {data.contactPhone && <p style={{ fontSize: "10px", marginBottom: "4px" }}>{data.contactPhone}</p>}
-                {data.contactEmail && <p style={{ fontSize: "10px" }}>{data.contactEmail}</p>}
-              </div>
-            )}
+            <div>
+              <h3 style={{ fontWeight: 700, fontSize: "12px", marginBottom: "5px" }}>GEÇERLİLİK SÜRESİ</h3>
+              <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "8px" }} />
+              <p style={{ fontSize: "10px", lineHeight: 1.6, fontWeight: 500 }}>{data.validityPeriod}</p>
+            </div>
           </div>
+
+          {(data.contactName || data.contactTitle || data.contactPhone || data.contactEmail) && (
+            <div style={{ alignSelf: "flex-end", marginLeft: "auto" }}>
+              <h3 style={{ fontWeight: 700, fontSize: "12px", marginBottom: "5px" }}>ŞİRKET YETKİLİ BİLGİLERİ</h3>
+              <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "8px" }} />
+              {data.contactName && <p style={{ fontSize: "10px", fontWeight: 700, marginBottom: "4px" }}>{data.contactName}</p>}
+              {data.contactTitle && <p style={{ fontSize: "10px", fontStyle: "italic", marginBottom: "4px" }}>{data.contactTitle}</p>}
+              {data.contactPhone && <p style={{ fontSize: "10px", marginBottom: "4px" }}>{data.contactPhone}</p>}
+              {data.contactEmail && <p style={{ fontSize: "10px" }}>{data.contactEmail}</p>}
+            </div>
+          )}
         </div>
       </div>
     </div>
