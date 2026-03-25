@@ -75,14 +75,15 @@ export default function ProposalKitListPages({ data }: Props) {
                           style={{
                             borderBottom: "1px solid hsl(0 0% 86%)",
                             backgroundColor: kitIndex % 2 === 0 ? "hsl(0 0% 100%)" : "hsl(0 0% 96%)",
-                            lineHeight: 1.6,
+                            height: `${metrics.rowHeight}px`,
+                            lineHeight: 1.4,
                             verticalAlign: "middle",
                           }}
                         >
-                          <td style={{ padding: `${metrics.cellPaddingY}px ${metrics.cellPaddingX}px`, fontSize: `${metrics.cellFontSize}px`, fontWeight: kitItem.module ? 600 : 400, verticalAlign: "middle" }}>
+                          <td style={{ padding: `${metrics.cellPaddingY}px ${metrics.cellPaddingX}px`, fontSize: `${metrics.cellFontSize}px`, fontWeight: 700, verticalAlign: "middle" }}>
                             {kitItem.module || "-"}
                           </td>
-                          <td style={{ padding: `${metrics.cellPaddingY}px ${metrics.cellPaddingX}px`, fontSize: `${metrics.cellFontSize}px`, fontWeight: 600, verticalAlign: "middle" }}>
+                          <td style={{ padding: `${metrics.cellPaddingY}px ${metrics.cellPaddingX}px`, fontSize: `${metrics.cellFontSize}px`, fontWeight: 400, verticalAlign: "middle" }}>
                             {kitItem.description || "-"}
                           </td>
                           {data.showSkuColumn && (
