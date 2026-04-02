@@ -67,9 +67,9 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
               <thead>
                 <tr style={{ borderBottom: "2px solid hsl(0 0% 0%)" }}>
                   <th style={{ textAlign: "left", padding: tablePadding, fontSize: "11px", fontWeight: 700 }}>AÇIKLAMA</th>
-                  <th style={{ textAlign: "center", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "86px" }}>MİKTAR</th>
-                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "118px" }}>BİRİM FİYAT</th>
-                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "118px" }}>TOPLAM</th>
+                  <th style={{ textAlign: "center", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "70px" }}>ADET</th>
+                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "100px" }}>BİRİM FİYAT</th>
+                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "100px" }}>TOPLAM</th>
                 </tr>
               </thead>
               <tbody>
@@ -84,7 +84,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                     <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "right", verticalAlign: "middle", lineHeight: 1.5 }}>
                       {formatCurrency(item.unitPrice)}
                     </td>
-                    <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "right", verticalAlign: "middle", lineHeight: 1.5, fontWeight: 600 }}>
+                    <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "right", verticalAlign: "middle", lineHeight: 1.5 }}>
                       {formatCurrency(item.quantity * item.unitPrice)}
                     </td>
                   </tr>
