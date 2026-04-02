@@ -67,7 +67,9 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
               <thead>
                 <tr style={{ borderBottom: "2px solid hsl(0 0% 0%)" }}>
                   <th style={{ textAlign: "left", padding: tablePadding, fontSize: "11px", fontWeight: 700 }}>AÇIKLAMA</th>
-                  <th style={{ textAlign: "center", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "86px" }}>ADET</th>
+                  <th style={{ textAlign: "center", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "86px" }}>MİKTAR</th>
+                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "118px" }}>BİRİM FİYAT</th>
+                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "118px" }}>TOPLAM</th>
                 </tr>
               </thead>
               <tbody>
@@ -79,12 +81,18 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                     <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "center", verticalAlign: "middle", lineHeight: 1.5 }}>
                       {item.quantity}
                     </td>
+                    <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "right", verticalAlign: "middle", lineHeight: 1.5 }}>
+                      {formatCurrency(item.unitPrice)}
+                    </td>
+                    <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "right", verticalAlign: "middle", lineHeight: 1.5, fontWeight: 600 }}>
+                      {formatCurrency(item.quantity * item.unitPrice)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
                 <tr style={{ borderTop: "2px solid hsl(0 0% 0%)" }}>
-                  <td style={{ padding: "10px 4px 0", fontSize: "12px", fontWeight: 700, textAlign: "right" }}>
+                  <td colSpan={3} style={{ padding: "10px 4px 0", fontSize: "12px", fontWeight: 700, textAlign: "right" }}>
                     GENEL TOPLAM
                   </td>
                   <td style={{ padding: "10px 4px 0", fontSize: "13px", fontWeight: 700, textAlign: "right" }}>
