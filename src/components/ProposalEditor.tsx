@@ -190,44 +190,10 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       const jsPDF = (await import("jspdf")).default;
 
       const container = previewRef.current;
-
-      // Find all page elements
       const pageElements = container.querySelectorAll("[data-page]") as NodeListOf<HTMLElement>;
 
-      // A4 dimensions in mm
       const pdfWidth = 210;
       const pdfHeight = 297;
-      const headerHeight = 18;
-      const footerHeight = 22;
-      const contentMarginTop = 6;
-      const contentAreaHeight = pdfHeight - headerHeight - footerHeight - contentMarginTop - 6;
-
-      // Load header and footer images
-      const loadImage = (src: string): Promise<HTMLImageElement> => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.onerror = reject;
-          img.src = src;
-        });
-      };
-
-      const headerImg = await loadImage(headerBanner);
-      const footerImg = await loadImage(footerBanner);
-
-      const headerCanvas = document.createElement("canvas");
-      headerCanvas.width = headerImg.naturalWidth;
-      headerCanvas.height = headerImg.naturalHeight;
-      const hCtx = headerCanvas.getContext("2d");
-      if (hCtx) hCtx.drawImage(headerImg, 0, 0);
-      const headerData = headerCanvas.toDataURL("image/png");
-
-      const footerCanvas = document.createElement("canvas");
-      footerCanvas.width = footerImg.naturalWidth;
-      footerCanvas.height = footerImg.naturalHeight;
-      const fCtx = footerCanvas.getContext("2d");
-      if (fCtx) fCtx.drawImage(footerImg, 0, 0);
-      const footerData = footerCanvas.toDataURL("image/png");
 
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -247,7 +213,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
           logging: false,
           backgroundColor: "hsl(0 0% 100%)",
           width: CONTENT_PAGE_WIDTH,
-          height: CONTENT_PAGE_HEIGHT,
+          height: FULL_PAGE_HEIGHT,
         });
 
         pageEl.style.width = originalWidth;
@@ -255,9 +221,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         const imgData = canvas.toDataURL("image/png");
 
         if (!isFirstPdfPage) pdf.addPage();
-        pdf.addImage(headerData, "PNG", 0, 0, pdfWidth, headerHeight);
-        pdf.addImage(imgData, "PNG", 0, headerHeight + contentMarginTop, pdfWidth, contentAreaHeight);
-        pdf.addImage(footerData, "PNG", 0, pdfHeight - footerHeight, pdfWidth, footerHeight);
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
         isFirstPdfPage = false;
       }
 
