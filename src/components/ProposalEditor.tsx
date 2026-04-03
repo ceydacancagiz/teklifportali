@@ -1,7 +1,5 @@
 import { useState, useRef } from "react";
 import { ArrowLeft, Download, Plus, Trash2, User, Package, Settings, ClipboardList } from "lucide-react";
-import headerBanner from "@/assets/header-banner.png";
-import footerBanner from "@/assets/footer-banner.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import ProposalPreview from "@/components/ProposalPreview";
 import type { ProposalData, LineItem, KitListItem } from "@/types/proposal";
-import { CONTENT_PAGE_HEIGHT, CONTENT_PAGE_WIDTH, getFittedKitListScale } from "@/lib/proposal-layout";
+import { FULL_PAGE_HEIGHT, CONTENT_PAGE_WIDTH, getFittedKitListScale } from "@/lib/proposal-layout";
 
 interface Props {
   onBack: () => void;
