@@ -1,22 +1,12 @@
 import type { ProposalData } from "@/types/proposal";
-import { CONTENT_PAGE_HEIGHT, CONTENT_PAGE_WIDTH } from "@/lib/proposal-layout";
+import { CONTENT_PAGE_HEIGHT } from "@/lib/proposal-layout";
+import PageShell from "@/components/proposal-preview/PageShell";
 
 interface Props {
   data: ProposalData;
   formatCurrency: (amount: number) => string;
   calculateTotal: () => number;
 }
-
-const PAGE_STYLE: React.CSSProperties = {
-  width: `${CONTENT_PAGE_WIDTH}px`,
-  height: `${CONTENT_PAGE_HEIGHT}px`,
-  backgroundColor: "hsl(0 0% 100%)",
-  fontFamily: "Arial, Helvetica, sans-serif",
-  color: "hsl(0 0% 0%)",
-  boxSizing: "border-box",
-  position: "relative",
-  overflow: "hidden",
-};
 
 export default function ProposalFirstPage({ data, formatCurrency, calculateTotal }: Props) {
   const itemCount = data.lineItems.length;
@@ -26,22 +16,10 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
   const tablePadding = itemCount > 6 ? "6px 4px" : "8px 4px";
 
   return (
-    <div data-page="1" style={PAGE_STYLE}>
+    <PageShell dataPage="1" date={data.date}>
       <div
         style={{
-          position: "absolute",
-          top: "28px",
-          right: "48px",
-          fontSize: "12px",
-          fontWeight: 600,
-        }}
-      >
-        {data.date}
-      </div>
-
-      <div
-        style={{
-          padding: "52px 48px 56px",
+          padding: "32px 48px 36px",
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -145,8 +123,14 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
               {data.contactEmail && <p style={{ fontSize: "10px" }}>{data.contactEmail}</p>}
             </div>
           )}
+
+          {data.footerText && (
+            <p style={{ fontSize: "8px", lineHeight: 1.6, fontWeight: 400, fontStyle: "italic", marginTop: "4px" }}>
+              {data.footerText}
+            </p>
+          )}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }
