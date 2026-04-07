@@ -1,7 +1,7 @@
 import type { LineItem } from "@/types/proposal";
 
 export const CONTENT_PAGE_WIDTH = 794;
-export const HEADER_HEIGHT = 82;
+export const HEADER_HEIGHT = 72;
 export const FOOTER_HEIGHT = 156;
 export const FULL_PAGE_HEIGHT = 1123; // A4 ratio at 794px width
 export const CONTENT_PAGE_HEIGHT = FULL_PAGE_HEIGHT - HEADER_HEIGHT - FOOTER_HEIGHT; // 869

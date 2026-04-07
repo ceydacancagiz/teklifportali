@@ -24,7 +24,7 @@ export default function PageShell({ dataPage, date, children }: Props) {
       }}
     >
       {/* Header */}
-      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px`, lineHeight: 0, padding: "3px 12px 0", boxSizing: "border-box" }}>
+      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px`, lineHeight: 0, padding: "10px 40px 0", boxSizing: "border-box" }}>
         <img
           src={headerBanner}
           alt=""
