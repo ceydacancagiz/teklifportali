@@ -28,7 +28,7 @@ export default function PageShell({ dataPage, date, children }: Props) {
         <img
           src={headerBanner}
           alt=""
-          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "bottom", display: "block" }}
+          style={{ width: "100%", height: "100%", objectFit: "fill", display: "block" }}
         />
         <div
           style={{
@@ -61,7 +61,7 @@ export default function PageShell({ dataPage, date, children }: Props) {
         <img
           src={footerBanner}
           alt=""
-          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", display: "block" }}
+          style={{ width: "100%", height: "100%", objectFit: "fill", display: "block" }}
         />
       </div>
     </div>
