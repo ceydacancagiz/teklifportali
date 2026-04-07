@@ -73,11 +73,11 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                   <td colSpan={3} style={{ padding: "10px 4px 0", fontSize: "12px", fontWeight: 700, textAlign: "right" }}>
                     GENEL TOPLAM
                   </td>
-                  <td style={{ padding: "10px 4px 0", fontSize: "13px", fontWeight: 700, textAlign: "right" }}>
+                   <td style={{ padding: "10px 4px 0", fontSize: "13px", fontWeight: 700, textAlign: "center" }}>
                     <span style={{
                       border: "2.5px solid hsl(0 75% 42%)",
                       color: "hsl(0 75% 42%)",
-                      padding: "6px 16px",
+                      padding: "8px 20px",
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -85,9 +85,11 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       fontSize: "13px",
                       fontWeight: 700,
                       letterSpacing: "0.3px",
-                      lineHeight: 1,
+                      lineHeight: "1",
                       minWidth: "100px",
+                      minHeight: "20px",
                       textAlign: "center",
+                      verticalAlign: "middle",
                     }}>
                       {formatCurrency(calculateTotal())}
                     </span>
