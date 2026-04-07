@@ -24,11 +24,11 @@ export default function PageShell({ dataPage, date, children }: Props) {
       }}
     >
       {/* Header */}
-      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px`, lineHeight: 0 }}>
+      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px`, lineHeight: 0, padding: "4px 8px 0", boxSizing: "border-box" }}>
         <img
           src={headerBanner}
           alt=""
-          style={{ width: "100%", height: "100%", objectFit: "fill", display: "block" }}
+          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
         />
         <div
           style={{
@@ -56,11 +56,11 @@ export default function PageShell({ dataPage, date, children }: Props) {
         {children}
       </div>
 
-      <div style={{ width: "100%", height: `${FOOTER_HEIGHT}px`, lineHeight: 0 }}>
+      <div style={{ width: "100%", height: `${FOOTER_HEIGHT}px`, lineHeight: 0, padding: "0 8px 4px", boxSizing: "border-box" }}>
         <img
           src={footerBanner}
           alt=""
-          style={{ width: "100%", height: "100%", objectFit: "fill", display: "block" }}
+          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
         />
       </div>
     </div>
