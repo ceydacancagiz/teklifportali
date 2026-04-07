@@ -24,7 +24,7 @@ export default function PageShell({ dataPage, date, children }: Props) {
       }}
     >
       {/* Header */}
-      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px` }}>
+      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px`, lineHeight: 0 }}>
         <img
           src={headerBanner}
           alt=""
@@ -33,18 +33,18 @@ export default function PageShell({ dataPage, date, children }: Props) {
         <div
           style={{
             position: "absolute",
-            bottom: "12px",
+            bottom: "10px",
             right: "48px",
             fontSize: "11px",
             fontWeight: 600,
             color: "hsl(0 0% 0%)",
+            lineHeight: 1.2,
           }}
         >
           Tarih : {date}
         </div>
       </div>
 
-      {/* Content */}
       <div
         style={{
           width: "100%",
@@ -56,8 +56,7 @@ export default function PageShell({ dataPage, date, children }: Props) {
         {children}
       </div>
 
-      {/* Footer */}
-      <div style={{ width: "100%", height: `${FOOTER_HEIGHT}px` }}>
+      <div style={{ width: "100%", height: `${FOOTER_HEIGHT}px`, lineHeight: 0 }}>
         <img
           src={footerBanner}
           alt=""
