@@ -24,21 +24,30 @@ export default function PageShell({ dataPage, date, children }: Props) {
       }}
     >
       {/* Header */}
-      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px`, lineHeight: 0, padding: "10px 40px 0", boxSizing: "border-box" }}>
-        <img
-          src={headerBanner}
-          alt=""
-          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
-        />
+      <div style={{
+        width: "100%",
+        height: `${HEADER_HEIGHT}px`,
+        padding: "16px 40px 0",
+        boxSizing: "border-box",
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "space-between",
+      }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+          <img
+            src={headerBanner}
+            alt=""
+            style={{ height: "36px", objectFit: "contain", display: "block" }}
+          />
+          <div style={{ width: "60px", height: "2px", backgroundColor: "hsl(0 75% 45%)", marginTop: "4px" }} />
+        </div>
         <div
           style={{
-            position: "absolute",
-            bottom: "10px",
-            right: "48px",
             fontSize: "11px",
             fontWeight: 600,
             color: "hsl(0 0% 0%)",
             lineHeight: 1.2,
+            paddingBottom: "4px",
           }}
         >
           Tarih : {date}
