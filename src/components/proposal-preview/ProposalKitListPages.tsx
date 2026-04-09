@@ -1,10 +1,19 @@
 import type { ProposalData } from "@/types/proposal";
-import { getKitListMetrics, paginateKitListSections } from "@/lib/proposal-layout";
-import PageShell from "@/components/proposal-preview/PageShell";
+import { CONTENT_PAGE_HEIGHT, CONTENT_PAGE_WIDTH, getKitListMetrics, paginateKitListSections } from "@/lib/proposal-layout";
 
 interface Props {
   data: ProposalData;
 }
+
+const PAGE_STYLE: React.CSSProperties = {
+  width: `${CONTENT_PAGE_WIDTH}px`,
+  height: `${CONTENT_PAGE_HEIGHT}px`,
+  backgroundColor: "hsl(0 0% 100%)",
+  fontFamily: "Arial, Helvetica, sans-serif",
+  color: "hsl(0 0% 0%)",
+  boxSizing: "border-box",
+  overflow: "hidden",
+};
 
 export default function ProposalKitListPages({ data }: Props) {
   const pages = paginateKitListSections(data.lineItems, data.kitListScale);
@@ -17,7 +26,7 @@ export default function ProposalKitListPages({ data }: Props) {
   return (
     <>
       {pages.map((page, pageIndex) => (
-        <PageShell key={`kit-page-${pageIndex + 1}`} dataPage={`kit-${pageIndex + 2}`} date={data.date}>
+        <div key={`kit-page-${pageIndex + 1}`} data-page={`kit-${pageIndex + 2}`} style={PAGE_STYLE}>
           <div
             style={{
               padding: `${baseMetrics.pagePaddingY}px ${baseMetrics.pagePaddingX}px`,
@@ -98,11 +107,11 @@ export default function ProposalKitListPages({ data }: Props) {
               );
             })}
           </div>
-        </PageShell>
+        </div>
       ))}
 
       {data.additionalNotes && (
-        <PageShell dataPage="notes" date={data.date}>
+        <div data-page="notes" style={PAGE_STYLE}>
           <div style={{ padding: `${baseMetrics.pagePaddingY}px ${baseMetrics.pagePaddingX}px`, boxSizing: "border-box" }}>
             <div>
               <h3 style={{ fontWeight: 700, fontSize: "11px", marginBottom: "4px" }}>İLAVE NOTLAR</h3>
@@ -110,7 +119,7 @@ export default function ProposalKitListPages({ data }: Props) {
               <p style={{ fontSize: "9px", lineHeight: 1.6 }}>{data.additionalNotes}</p>
             </div>
           </div>
-        </PageShell>
+        </div>
       )}
     </>
   );
