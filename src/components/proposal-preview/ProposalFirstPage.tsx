@@ -1,22 +1,12 @@
 import type { ProposalData } from "@/types/proposal";
-import { CONTENT_PAGE_HEIGHT, CONTENT_PAGE_WIDTH } from "@/lib/proposal-layout";
+import { CONTENT_PAGE_HEIGHT } from "@/lib/proposal-layout";
+import PageShell from "@/components/proposal-preview/PageShell";
 
 interface Props {
   data: ProposalData;
   formatCurrency: (amount: number) => string;
   calculateTotal: () => number;
 }
-
-const PAGE_STYLE: React.CSSProperties = {
-  width: `${CONTENT_PAGE_WIDTH}px`,
-  height: `${CONTENT_PAGE_HEIGHT}px`,
-  backgroundColor: "hsl(0 0% 100%)",
-  fontFamily: "Arial, Helvetica, sans-serif",
-  color: "hsl(0 0% 0%)",
-  boxSizing: "border-box",
-  position: "relative",
-  overflow: "hidden",
-};
 
 export default function ProposalFirstPage({ data, formatCurrency, calculateTotal }: Props) {
   const itemCount = data.lineItems.length;
@@ -26,22 +16,10 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
   const tablePadding = itemCount > 6 ? "6px 4px" : "8px 4px";
 
   return (
-    <div data-page="1" style={PAGE_STYLE}>
+    <PageShell dataPage="1" date={data.date}>
       <div
         style={{
-          position: "absolute",
-          top: "28px",
-          right: "48px",
-          fontSize: "12px",
-          fontWeight: 600,
-        }}
-      >
-        {data.date}
-      </div>
-
-      <div
-        style={{
-          padding: "52px 48px 56px",
+          padding: "32px 48px 36px",
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -67,7 +45,9 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
               <thead>
                 <tr style={{ borderBottom: "2px solid hsl(0 0% 0%)" }}>
                   <th style={{ textAlign: "left", padding: tablePadding, fontSize: "11px", fontWeight: 700 }}>AÇIKLAMA</th>
-                  <th style={{ textAlign: "center", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "86px" }}>ADET</th>
+                  <th style={{ textAlign: "center", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "70px" }}>ADET</th>
+                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "100px" }}>BİRİM FİYAT</th>
+                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "100px" }}>TOPLAM</th>
                 </tr>
               </thead>
               <tbody>
@@ -79,12 +59,18 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                     <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "center", verticalAlign: "middle", lineHeight: 1.5 }}>
                       {item.quantity}
                     </td>
+                    <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "right", verticalAlign: "middle", lineHeight: 1.5 }}>
+                      {formatCurrency(item.unitPrice)}
+                    </td>
+                    <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "right", verticalAlign: "middle", lineHeight: 1.5 }}>
+                      {formatCurrency(item.quantity * item.unitPrice)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
                 <tr style={{ borderTop: "2px solid hsl(0 0% 0%)" }}>
-                  <td style={{ padding: "10px 4px 0", fontSize: "12px", fontWeight: 700, textAlign: "right" }}>
+                  <td colSpan={3} style={{ padding: "10px 4px 0", fontSize: "12px", fontWeight: 700, textAlign: "right" }}>
                     GENEL TOPLAM
                   </td>
                   <td style={{ padding: "10px 4px 0", fontSize: "13px", fontWeight: 700, textAlign: "right" }}>
@@ -137,8 +123,14 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
               {data.contactEmail && <p style={{ fontSize: "10px" }}>{data.contactEmail}</p>}
             </div>
           )}
+
+          {data.footerText && (
+            <p style={{ fontSize: "8px", lineHeight: 1.6, fontWeight: 400, fontStyle: "italic", marginTop: "4px" }}>
+              {data.footerText}
+            </p>
+          )}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }
