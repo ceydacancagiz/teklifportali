@@ -75,42 +75,25 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                   </td>
                   <td style={{ padding: "10px 4px 0", textAlign: "right" }}>
                     <div style={{
-                      position: "relative",
                       display: "block",
                       border: "2.5px solid hsl(0 75% 42%)",
                       color: "hsl(0 75% 42%)",
                       fontFamily: "Arial, Helvetica, sans-serif",
-                      fontSize: 0,
+                      fontSize: "13px",
                       fontWeight: 700,
                       letterSpacing: "0.3px",
-                      lineHeight: 0,
+                      textAlign: "center",
+                      verticalAlign: "middle",
+                      whiteSpace: "nowrap",
                       padding: 0,
                       margin: "0 0 0 auto",
                       height: "32px",
+                      minHeight: "32px",
                       width: "110px",
+                      lineHeight: "32px",
                       boxSizing: "border-box",
-                      overflow: "hidden",
                     }}>
-                      <div style={{
-                        position: "absolute",
-                        inset: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: 0,
-                        margin: 0,
-                      }}>
-                        <span style={{
-                          display: "block",
-                          whiteSpace: "nowrap",
-                          fontSize: "13px",
-                          lineHeight: "13px",
-                          padding: 0,
-                          margin: 0,
-                        }}>
-                          {formatCurrency(calculateTotal())}
-                        </span>
-                      </div>
+                      {formatCurrency(calculateTotal())}
                     </div>
                   </td>
                 </tr>
