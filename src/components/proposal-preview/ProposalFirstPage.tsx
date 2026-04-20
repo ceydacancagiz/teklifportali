@@ -19,18 +19,18 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
     <PageShell dataPage="1" date={data.date}>
       <div
         style={{
-          padding: "32px 48px 36px",
+          padding: "12px 38px 20px",
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
+          justifyContent: "flex-start",
           boxSizing: "border-box",
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: `${contentGap}px` }}>
           <div style={{ marginBottom: `${customerBottom}px` }}>
-            <div style={{ fontSize: "15px", marginBottom: "8px", fontWeight: 600 }}>Sayın</div>
-            <div style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2px", marginBottom: "14px" }}>
+            <div style={{ fontSize: "15px", marginBottom: "6px", fontWeight: 600 }}>Sayın</div>
+            <div style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2px", marginBottom: "12px" }}>
               {data.customerName || "Müşteri Adı"},
             </div>
             {data.introText && (
