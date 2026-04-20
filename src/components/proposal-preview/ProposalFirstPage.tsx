@@ -91,20 +91,26 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       boxSizing: "border-box",
                       overflow: "hidden",
                     }}>
-                      <span style={{
+                      <div style={{
                         position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        display: "block",
-                        whiteSpace: "nowrap",
-                        fontSize: "13px",
-                        lineHeight: "13px",
+                        inset: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         padding: 0,
                         margin: 0,
                       }}>
-                        {formatCurrency(calculateTotal())}
-                      </span>
+                        <span style={{
+                          display: "block",
+                          whiteSpace: "nowrap",
+                          fontSize: "13px",
+                          lineHeight: "13px",
+                          padding: 0,
+                          margin: 0,
+                        }}>
+                          {formatCurrency(calculateTotal())}
+                        </span>
+                      </div>
                     </div>
                   </td>
                 </tr>
