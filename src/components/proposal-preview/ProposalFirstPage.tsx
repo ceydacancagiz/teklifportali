@@ -10,10 +10,10 @@ interface Props {
 
 export default function ProposalFirstPage({ data, formatCurrency, calculateTotal }: Props) {
   const itemCount = data.lineItems.length;
-  const contentGap = itemCount > 6 ? 18 : itemCount > 4 ? 22 : 28;
-  const customerBottom = itemCount > 5 ? 18 : 28;
-  const tableFontSize = itemCount > 6 ? 10 : 11;
-  const tablePadding = itemCount > 6 ? "6px 4px" : "8px 4px";
+  const contentGap = itemCount > 6 ? 16 : itemCount > 4 ? 20 : 24;
+  const customerBottom = itemCount > 5 ? 16 : 24;
+  const tableFontSize = itemCount > 6 ? 12 : 13;
+  const tablePadding = itemCount > 6 ? "8px 6px" : "10px 6px";
 
   return (
     <PageShell dataPage="1" date={data.date}>
@@ -29,12 +29,12 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
       >
         <div style={{ display: "flex", flexDirection: "column", gap: `${contentGap}px` }}>
           <div style={{ marginBottom: `${customerBottom}px` }}>
-            <div style={{ fontSize: "15px", marginBottom: "4px", fontWeight: 600 }}>Sayın</div>
-            <div style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2px", marginBottom: "10px" }}>
+            <div style={{ fontSize: "18px", marginBottom: "6px", fontWeight: 600 }}>Sayın</div>
+            <div style={{ fontSize: "26px", fontWeight: 700, letterSpacing: "0.2px", marginBottom: "12px" }}>
               {data.customerName || "Müşteri Adı"},
             </div>
             {data.introText && (
-              <p style={{ fontSize: "10px", lineHeight: 1.7, fontWeight: 500, whiteSpace: "pre-line", maxWidth: "90%" }}>
+              <p style={{ fontSize: "12px", lineHeight: 1.7, fontWeight: 500, whiteSpace: "pre-line", maxWidth: "90%" }}>
                 {data.introText}
               </p>
             )}
@@ -44,10 +44,10 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid hsl(0 0% 0%)" }}>
-                  <th style={{ textAlign: "left", padding: tablePadding, fontSize: "11px", fontWeight: 700 }}>AÇIKLAMA</th>
-                  <th style={{ textAlign: "center", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "70px" }}>ADET</th>
-                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "100px" }}>BİRİM FİYAT</th>
-                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "11px", fontWeight: 700, width: "100px" }}>TOPLAM</th>
+                  <th style={{ textAlign: "left", padding: tablePadding, fontSize: "13px", fontWeight: 700 }}>AÇIKLAMA</th>
+                  <th style={{ textAlign: "center", padding: tablePadding, fontSize: "13px", fontWeight: 700, width: "70px" }}>ADET</th>
+                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "13px", fontWeight: 700, width: "100px" }}>BİRİM FİYAT</th>
+                  <th style={{ textAlign: "right", padding: tablePadding, fontSize: "13px", fontWeight: 700, width: "100px" }}>TOPLAM</th>
                 </tr>
               </thead>
               <tbody>
@@ -70,7 +70,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
               </tbody>
               <tfoot>
                 <tr style={{ borderTop: "2px solid hsl(0 0% 0%)" }}>
-                  <td colSpan={3} style={{ padding: "10px 4px 0", fontSize: "12px", fontWeight: 700, textAlign: "right" }}>
+                  <td colSpan={3} style={{ padding: "10px 6px 0", fontSize: "14px", fontWeight: 700, textAlign: "right" }}>
                     GENEL TOPLAM
                   </td>
                   <td style={{ padding: "10px 4px 0", textAlign: "right" }}>
@@ -79,7 +79,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       border: "2.5px solid hsl(0 75% 42%)",
                       color: "hsl(0 75% 42%)",
                       fontFamily: "Arial, Helvetica, sans-serif",
-                      fontSize: "13px",
+                      fontSize: "14px",
                       fontWeight: 700,
                       letterSpacing: "0.3px",
                       textAlign: "center",
@@ -87,10 +87,10 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       whiteSpace: "nowrap",
                       padding: 0,
                       margin: "0 0 0 auto",
-                      height: "32px",
-                      minHeight: "32px",
-                      width: "110px",
-                      lineHeight: "32px",
+                      height: "36px",
+                      minHeight: "36px",
+                      width: "120px",
+                      lineHeight: "36px",
                       boxSizing: "border-box",
                     }}>
                       {formatCurrency(calculateTotal())}
@@ -103,33 +103,33 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
 
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <div>
-              <h3 style={{ fontWeight: 700, fontSize: "12px", marginBottom: "5px" }}>FİYATLAR VE ÖDEME</h3>
-              <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "8px" }} />
-              <p style={{ fontSize: "10px", lineHeight: 1.6, whiteSpace: "pre-line", fontWeight: 500 }}>
+              <h3 style={{ fontWeight: 700, fontSize: "14px", marginBottom: "6px" }}>FİYATLAR VE ÖDEME</h3>
+              <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "10px" }} />
+              <p style={{ fontSize: "12px", lineHeight: 1.6, whiteSpace: "pre-line", fontWeight: 500 }}>
                 {data.paymentTerms}
               </p>
             </div>
 
             <div>
-              <h3 style={{ fontWeight: 700, fontSize: "12px", marginBottom: "5px" }}>GEÇERLİLİK SÜRESİ</h3>
-              <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "8px" }} />
-              <p style={{ fontSize: "10px", lineHeight: 1.6, fontWeight: 500 }}>{data.validityPeriod}</p>
+              <h3 style={{ fontWeight: 700, fontSize: "14px", marginBottom: "6px" }}>GEÇERLİLİK SÜRESİ</h3>
+              <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "10px" }} />
+              <p style={{ fontSize: "12px", lineHeight: 1.6, fontWeight: 500 }}>{data.validityPeriod}</p>
             </div>
           </div>
 
           {(data.contactName || data.contactTitle || data.contactPhone || data.contactEmail) && (
             <div style={{ alignSelf: "flex-end", marginLeft: "auto" }}>
-              <h3 style={{ fontWeight: 700, fontSize: "12px", marginBottom: "5px" }}>ŞİRKET YETKİLİ BİLGİLERİ</h3>
-              <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "8px" }} />
-              {data.contactName && <p style={{ fontSize: "10px", fontWeight: 700, marginBottom: "4px" }}>{data.contactName}</p>}
-              {data.contactTitle && <p style={{ fontSize: "10px", fontStyle: "italic", marginBottom: "4px" }}>{data.contactTitle}</p>}
-              {data.contactPhone && <p style={{ fontSize: "10px", marginBottom: "4px" }}>{data.contactPhone}</p>}
-              {data.contactEmail && <p style={{ fontSize: "10px" }}>{data.contactEmail}</p>}
+              <h3 style={{ fontWeight: 700, fontSize: "14px", marginBottom: "6px" }}>ŞİRKET YETKİLİ BİLGİLERİ</h3>
+              <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "10px" }} />
+              {data.contactName && <p style={{ fontSize: "12px", fontWeight: 700, marginBottom: "4px" }}>{data.contactName}</p>}
+              {data.contactTitle && <p style={{ fontSize: "12px", fontStyle: "italic", marginBottom: "4px" }}>{data.contactTitle}</p>}
+              {data.contactPhone && <p style={{ fontSize: "12px", marginBottom: "4px" }}>{data.contactPhone}</p>}
+              {data.contactEmail && <p style={{ fontSize: "12px" }}>{data.contactEmail}</p>}
             </div>
           )}
 
           {data.footerText && (
-            <p style={{ fontSize: "8px", lineHeight: 1.6, fontWeight: 400, fontStyle: "italic", marginTop: "4px" }}>
+            <p style={{ fontSize: "10px", lineHeight: 1.6, fontWeight: 400, fontStyle: "italic", marginTop: "4px" }}>
               {data.footerText}
             </p>
           )}
