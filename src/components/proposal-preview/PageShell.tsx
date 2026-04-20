@@ -24,16 +24,25 @@ export default function PageShell({ dataPage, date, children }: Props) {
       }}
     >
       {/* Header */}
-      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px` }}>
+      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px`, overflow: "hidden" }}>
         <img
           src={headerBanner}
           alt=""
-          style={{ width: "100%", height: "100%", objectFit: "fill", display: "block" }}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            objectPosition: "top center",
+            display: "block",
+            transform: "scale(1.2)",
+            transformOrigin: "top center",
+            imageRendering: "auto" as React.CSSProperties["imageRendering"],
+          }}
         />
         <div
           style={{
             position: "absolute",
-            bottom: "12px",
+            bottom: "8px",
             right: "48px",
             fontSize: "11px",
             fontWeight: 600,
@@ -57,11 +66,17 @@ export default function PageShell({ dataPage, date, children }: Props) {
       </div>
 
       {/* Footer */}
-      <div style={{ width: "100%", height: `${FOOTER_HEIGHT}px` }}>
+      <div style={{ width: "100%", height: `${FOOTER_HEIGHT}px`, overflow: "hidden" }}>
         <img
           src={footerBanner}
           alt=""
-          style={{ width: "100%", height: "100%", objectFit: "fill", display: "block" }}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            objectPosition: "bottom center",
+            display: "block",
+          }}
         />
       </div>
     </div>
