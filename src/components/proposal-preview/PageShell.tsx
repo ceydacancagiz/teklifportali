@@ -20,29 +20,23 @@ export default function PageShell({ dataPage, date, children }: Props) {
         color: "hsl(0 0% 0%)",
         boxSizing: "border-box",
         position: "relative",
-        overflow: "hidden",
       }}
     >
-      {/* Header */}
-      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px`, overflow: "hidden" }}>
+      {/* Header — orijinal en-boy oranı korunur */}
+      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px` }}>
         <img
           src={headerBanner}
           alt=""
           style={{
             width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            objectPosition: "top center",
+            height: "auto",
             display: "block",
-            transform: "scale(1.2)",
-            transformOrigin: "top center",
-            imageRendering: "auto" as React.CSSProperties["imageRendering"],
           }}
         />
         <div
           style={{
             position: "absolute",
-            bottom: "8px",
+            bottom: "10px",
             right: "48px",
             fontSize: "11px",
             fontWeight: 600,
@@ -65,16 +59,14 @@ export default function PageShell({ dataPage, date, children }: Props) {
         {children}
       </div>
 
-      {/* Footer */}
-      <div style={{ width: "100%", height: `${FOOTER_HEIGHT}px`, overflow: "hidden" }}>
+      {/* Footer — orijinal en-boy oranı korunur */}
+      <div style={{ width: "100%", height: `${FOOTER_HEIGHT}px` }}>
         <img
           src={footerBanner}
           alt=""
           style={{
             width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            objectPosition: "bottom center",
+            height: "auto",
             display: "block",
           }}
         />
