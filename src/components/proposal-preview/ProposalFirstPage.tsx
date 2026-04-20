@@ -77,7 +77,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                     <span style={{
                       border: "2.5px solid hsl(0 75% 42%)",
                       color: "hsl(0 75% 42%)",
-                      padding: "6px 16px",
+                      padding: "0 16px",
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -86,8 +86,10 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       fontWeight: 700,
                       letterSpacing: "0.3px",
                       lineHeight: 1,
+                      height: "32px",
                       minWidth: "100px",
-                      textAlign: "center",
+                      boxSizing: "border-box",
+                      verticalAlign: "middle",
                     }}>
                       {formatCurrency(calculateTotal())}
                     </span>
