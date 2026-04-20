@@ -75,9 +75,8 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                   </td>
                   <td style={{ padding: "10px 4px 0", textAlign: "right" }}>
                     <div style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      position: "relative",
+                      display: "block",
                       border: "2.5px solid hsl(0 75% 42%)",
                       color: "hsl(0 75% 42%)",
                       fontFamily: "Arial, Helvetica, sans-serif",
@@ -90,17 +89,28 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       height: "32px",
                       width: "110px",
                       boxSizing: "border-box",
+                      overflow: "hidden",
                     }}>
-                      <span style={{
-                        display: "inline-block",
-                        fontSize: "13px",
-                        lineHeight: "13px",
-                        verticalAlign: "middle",
+                      <div style={{
+                        position: "absolute",
+                        inset: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         padding: 0,
                         margin: 0,
                       }}>
-                        {formatCurrency(calculateTotal())}
-                      </span>
+                        <span style={{
+                          display: "block",
+                          whiteSpace: "nowrap",
+                          fontSize: "13px",
+                          lineHeight: "13px",
+                          padding: 0,
+                          margin: 0,
+                        }}>
+                          {formatCurrency(calculateTotal())}
+                        </span>
+                      </div>
                     </div>
                   </td>
                 </tr>
