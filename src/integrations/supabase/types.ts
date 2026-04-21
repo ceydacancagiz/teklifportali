@@ -20,6 +20,7 @@ export type Database = {
           currency: string | null
           customer_name: string | null
           date: string | null
+          full_data: Json | null
           id: string
           intro_text: string | null
           items: Json | null
@@ -33,6 +34,7 @@ export type Database = {
           currency?: string | null
           customer_name?: string | null
           date?: string | null
+          full_data?: Json | null
           id?: string
           intro_text?: string | null
           items?: Json | null
@@ -46,6 +48,7 @@ export type Database = {
           currency?: string | null
           customer_name?: string | null
           date?: string | null
+          full_data?: Json | null
           id?: string
           intro_text?: string | null
           items?: Json | null
