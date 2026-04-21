@@ -1,14 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ProposalEditor from "@/components/ProposalEditor";
+import { supabase } from "@/integrations/supabase/client";
 import type { Proposal } from "@/types/proposal";
+import { useToast } from "@/hooks/use-toast";
 
 export default function HomePage() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingProposal, setEditingProposal] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  const fetchProposals = async () => {
+    const { data, error } = await supabase
+      .from("proposals")
+      .select("id, customer_name, date, total, currency")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching proposals:", error);
+      toast({ title: "Hata", description: "Teklifler yüklenemedi.", variant: "destructive" });
+    } else {
+      setProposals(
+        (data || []).map((row) => ({
+          id: row.id,
+          customerName: row.customer_name || "",
+          date: row.date || "",
+          total: row.total || 0,
+          currency: row.currency || "USD",
+        }))
+      );
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchProposals();
+  }, []);
 
   const handleNewProposal = () => {
     setEditingProposal(null);
@@ -18,16 +49,42 @@ export default function HomePage() {
   const handleBack = () => {
     setIsEditing(false);
     setEditingProposal(null);
+    fetchProposals();
   };
 
-  const handleSave = (proposal: any) => {
-    if (editingProposal) {
-      setProposals(proposals.map((p) => (p.id === proposal.id ? proposal : p)));
+  const handleSave = async (proposal: any) => {
+    const row = {
+      customer_name: proposal.customerName || "",
+      date: proposal.date || "",
+      currency: proposal.currency || "USD",
+      total: proposal.total || 0,
+      intro_text: proposal.introText || "",
+      notes: proposal.additionalNotes || "",
+      items: proposal.lineItems || [],
+      full_data: proposal,
+    };
+
+    let error;
+    if (proposal.id && !proposal.id.startsWith?.("new-")) {
+      // Update existing
+      const result = await supabase.from("proposals").update(row).eq("id", proposal.id);
+      error = result.error;
     } else {
-      setProposals([...proposals, { ...proposal, id: Date.now().toString() }]);
+      // Insert new
+      const result = await supabase.from("proposals").insert(row);
+      error = result.error;
     }
+
+    if (error) {
+      console.error("Save error:", error);
+      toast({ title: "Hata", description: "Teklif kaydedilemedi.", variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "Başarılı", description: "Teklif kaydedildi." });
     setIsEditing(false);
     setEditingProposal(null);
+    fetchProposals();
   };
 
   if (isEditing) {
@@ -56,7 +113,9 @@ export default function HomePage() {
           </Button>
         </div>
 
-        {proposals.length === 0 ? (
+        {loading ? (
+          <p className="text-center text-muted-foreground py-16">Yükleniyor...</p>
+        ) : proposals.length === 0 ? (
           <Card className="p-16 text-center border-dashed border-2">
             <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold text-foreground mb-2">
@@ -76,8 +135,17 @@ export default function HomePage() {
               <Card
                 key={proposal.id}
                 className="p-4 cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => {
-                  setEditingProposal(proposal);
+                onClick={async () => {
+                  const { data } = await supabase
+                    .from("proposals")
+                    .select("*")
+                    .eq("id", proposal.id)
+                    .single();
+                  if (data?.full_data) {
+                    setEditingProposal({ ...(data.full_data as any), id: data.id });
+                  } else {
+                    setEditingProposal({ id: data?.id, customerName: data?.customer_name, date: data?.date, currency: data?.currency });
+                  }
                   setIsEditing(true);
                 }}
               >

@@ -1,0 +1,1 @@
+ALTER TABLE public.proposals ADD COLUMN full_data JSONB DEFAULT '{}'::jsonb;

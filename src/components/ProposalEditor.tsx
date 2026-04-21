@@ -237,7 +237,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
 
   const handleSave = () => {
     onSave({
-      id: proposal?.id || Date.now().toString(),
+      id: proposal?.id,
       customerName: data.customerName,
       date: data.date,
       total: calculateTotal(),
