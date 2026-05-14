@@ -1,6 +1,6 @@
 import headerBanner from "@/assets/header-banner.png";
 import footerBanner from "@/assets/footer-banner.png";
-import { CONTENT_PAGE_WIDTH, FULL_PAGE_HEIGHT, HEADER_HEIGHT, FOOTER_HEIGHT, CONTENT_PAGE_HEIGHT } from "@/lib/proposal-layout";
+import { CONTENT_PAGE_WIDTH, FULL_PAGE_HEIGHT, HEADER_HEIGHT, HEADER_IMAGE_OFFSET, FOOTER_HEIGHT, CONTENT_PAGE_HEIGHT } from "@/lib/proposal-layout";
 
 interface Props {
   dataPage: string;
@@ -22,8 +22,8 @@ export default function PageShell({ dataPage, date, children }: Props) {
         position: "relative",
       }}
     >
-      {/* Header — orijinal en-boy oranı korunur */}
-      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px` }}>
+      {/* Header — orijinal en-boy oranı korunur, hafifçe yukarı kaydırılır */}
+      <div style={{ position: "relative", width: "100%", height: `${HEADER_HEIGHT}px`, overflow: "hidden" }}>
         <img
           src={headerBanner}
           alt=""
@@ -31,6 +31,7 @@ export default function PageShell({ dataPage, date, children }: Props) {
             width: "100%",
             height: "auto",
             display: "block",
+            marginTop: `${HEADER_IMAGE_OFFSET}px`,
           }}
         />
         <div

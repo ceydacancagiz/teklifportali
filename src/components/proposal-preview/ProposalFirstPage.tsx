@@ -1,6 +1,7 @@
 import type { ProposalData } from "@/types/proposal";
 import { CONTENT_PAGE_HEIGHT } from "@/lib/proposal-layout";
 import PageShell from "@/components/proposal-preview/PageShell";
+import FitToHeight from "@/components/FitToHeight";
 
 interface Props {
   data: ProposalData;
@@ -17,10 +18,10 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
 
   return (
     <PageShell dataPage="1" date={data.date}>
+      <FitToHeight maxHeight={CONTENT_PAGE_HEIGHT}>
       <div
         style={{
           padding: "6px 38px 20px",
-          height: "100%",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
@@ -135,6 +136,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
           )}
         </div>
       </div>
+      </FitToHeight>
     </PageShell>
   );
 }

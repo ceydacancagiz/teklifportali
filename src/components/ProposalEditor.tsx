@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import ProposalPreview from "@/components/ProposalPreview";
+import PriceInput from "@/components/PriceInput";
 import type { ProposalData, LineItem, KitListItem } from "@/types/proposal";
 import { FULL_PAGE_HEIGHT, CONTENT_PAGE_WIDTH, getFittedKitListScale } from "@/lib/proposal-layout";
 
@@ -371,16 +372,9 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
                     </div>
                     <div>
                       <Label>Birim Fiyat ({getCurrencySymbol()})</Label>
-                      <Input
-                        type="number"
+                      <PriceInput
                         value={item.unitPrice}
-                        onChange={(e) =>
-                          updateLineItem(
-                            item.id,
-                            "unitPrice",
-                            parseFloat(e.target.value) || 0
-                          )
-                        }
+                        onChange={(v) => updateLineItem(item.id, "unitPrice", v)}
                         className="mt-1"
                       />
                     </div>
