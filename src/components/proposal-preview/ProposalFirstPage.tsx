@@ -136,6 +136,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
           )}
         </div>
       </div>
+      </FitToHeight>
     </PageShell>
   );
 }
