@@ -2,7 +2,9 @@ import type { LineItem } from "@/types/proposal";
 
 export const CONTENT_PAGE_WIDTH = 794;
 // Görseller doğal en-boy oranını korur (1142x248 → 794x~172)
-export const HEADER_HEIGHT = 172;
+// Header görseli birkaç piksel yukarı kaydırılır (boş üst alanı kırpmak için)
+export const HEADER_HEIGHT = 162;
+export const HEADER_IMAGE_OFFSET = -10;
 export const FOOTER_HEIGHT = 113;
 export const FULL_PAGE_HEIGHT = 1123; // A4 ratio at 794px width
 export const CONTENT_PAGE_HEIGHT = FULL_PAGE_HEIGHT - HEADER_HEIGHT - FOOTER_HEIGHT;
