@@ -200,6 +200,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         orientation: "portrait",
         unit: "mm",
         format: "a4",
+        compress: true,
       });
 
       let isFirstPdfPage = true;
@@ -209,20 +210,20 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         pageEl.style.width = `${CONTENT_PAGE_WIDTH}px`;
 
         const canvas = await html2canvas(pageEl, {
-          scale: 3,
+          scale: 2,
           useCORS: true,
           logging: false,
-          backgroundColor: "hsl(0 0% 100%)",
+          backgroundColor: "#ffffff",
           width: CONTENT_PAGE_WIDTH,
           height: FULL_PAGE_HEIGHT,
         });
 
         pageEl.style.width = originalWidth;
 
-        const imgData = canvas.toDataURL("image/png");
+        const imgData = canvas.toDataURL("image/jpeg", 0.82);
 
         if (!isFirstPdfPage) pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight, undefined, "FAST");
         isFirstPdfPage = false;
       }
 
