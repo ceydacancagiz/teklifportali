@@ -1,0 +1,1 @@
+ALTER TABLE public.proposals ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'draft'; ALTER TABLE public.proposals ADD COLUMN IF NOT EXISTS created_by TEXT;

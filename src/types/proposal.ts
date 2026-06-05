@@ -45,4 +45,15 @@ export interface Proposal {
   date: string;
   total: number;
   currency: string;
+  status: "draft" | "approved";
+  createdBy: string;
 }
+
+export const USERS = [
+  "Yeşim Saçlı",
+  "Özlem Hür",
+  "Ülker Ertuğrul",
+  "Ceyda Cancağız",
+] as const;
+
+export type UserName = (typeof USERS)[number];

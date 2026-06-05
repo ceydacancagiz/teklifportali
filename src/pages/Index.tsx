@@ -1,11 +1,16 @@
-import { useState, useEffect } from "react";
-import { Plus, FileText, Calendar } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Plus, FileText, Calendar, Check, Search, LogOut, CheckCircle2, Clock, TrendingUp, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import ProposalEditor from "@/components/ProposalEditor";
 import { supabase } from "@/integrations/supabase/client";
 import type { Proposal } from "@/types/proposal";
+import { USERS } from "@/types/proposal";
 import { useToast } from "@/hooks/use-toast";
+import { useCurrentUser, setCurrentUser } from "@/hooks/useCurrentUser";
 import avasyaLogo from "@/assets/avasya-logo.png";
 
 export default function HomePage() {
@@ -13,12 +18,16 @@ export default function HomePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingProposal, setEditingProposal] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [userFilter, setUserFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
   const { toast } = useToast();
+  const currentUser = useCurrentUser();
 
   const fetchProposals = async () => {
     const { data, error } = await supabase
       .from("proposals")
-      .select("id, customer_name, date, total, currency")
+      .select("id, customer_name, date, total, currency, status, created_by")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -26,12 +35,14 @@ export default function HomePage() {
       toast({ title: "Hata", description: "Teklifler yüklenemedi.", variant: "destructive" });
     } else {
       setProposals(
-        (data || []).map((row) => ({
+        (data || []).map((row: any) => ({
           id: row.id,
           customerName: row.customer_name || "",
           date: row.date || "",
           total: row.total || 0,
           currency: row.currency || "USD",
+          status: (row.status as "draft" | "approved") || "draft",
+          createdBy: row.created_by || "",
         }))
       );
     }
@@ -39,8 +50,8 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    fetchProposals();
-  }, []);
+    if (currentUser) fetchProposals();
+  }, [currentUser]);
 
   const handleNewProposal = () => {
     setEditingProposal(null);
@@ -54,7 +65,7 @@ export default function HomePage() {
   };
 
   const handleSave = async (proposal: any) => {
-    const row = {
+    const row: any = {
       customer_name: proposal.customerName || "",
       date: proposal.date || "",
       currency: proposal.currency || "USD",
@@ -67,11 +78,11 @@ export default function HomePage() {
 
     let error;
     if (proposal.id && !proposal.id.startsWith?.("new-")) {
-      // Update existing
       const result = await supabase.from("proposals").update(row).eq("id", proposal.id);
       error = result.error;
     } else {
-      // Insert new
+      row.created_by = currentUser;
+      row.status = "draft";
       const result = await supabase.from("proposals").insert(row);
       error = result.error;
     }
@@ -88,98 +99,220 @@ export default function HomePage() {
     fetchProposals();
   };
 
-  if (isEditing) {
+  const toggleApproval = async (e: React.MouseEvent, p: Proposal) => {
+    e.stopPropagation();
+    const newStatus = p.status === "approved" ? "draft" : "approved";
+    const { error } = await supabase.from("proposals").update({ status: newStatus }).eq("id", p.id);
+    if (error) {
+      toast({ title: "Hata", description: "Durum güncellenemedi.", variant: "destructive" });
+      return;
+    }
+    setProposals((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus } : x)));
+  };
+
+  // --- Profile picker screen ---
+  if (!currentUser) {
     return (
-      <ProposalEditor
-        onBack={handleBack}
-        onSave={handleSave}
-        proposal={editingProposal}
-      />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 flex items-center justify-center p-6">
+        <div className="w-full max-w-2xl">
+          <div className="text-center mb-10">
+            <img src={avasyaLogo} alt="Avasya Teknoloji" className="h-20 md:h-24 w-auto mx-auto mb-6 select-none" draggable={false} />
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-red-700 uppercase">
+              Avasya Teknoloji Teklif Yönetim Sistemi
+            </h1>
+            <p className="mt-3 text-sm text-slate-500">Devam etmek için profilinizi seçin</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {USERS.map((name) => (
+              <button
+                key={name}
+                onClick={() => setCurrentUser(name)}
+                className="group flex items-center gap-4 p-5 rounded-xl border border-slate-200 bg-white hover:border-red-700/40 hover:shadow-md transition-all text-left"
+              >
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                  {name.split(" ").map((n) => n[0]).join("")}
+                </div>
+                <div>
+                  <div className="font-semibold text-slate-900 group-hover:text-red-700 transition-colors">{name}</div>
+                  <div className="text-xs text-slate-500">Avasya Teknoloji</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     );
   }
 
+  if (isEditing) {
+    return <ProposalEditor onBack={handleBack} onSave={handleSave} proposal={editingProposal} />;
+  }
+
+  const visibleProposals = useMemo(() => {
+    return proposals.filter((p) => {
+      if (userFilter !== "all" && p.createdBy !== userFilter) return false;
+      if (statusFilter !== "all" && p.status !== statusFilter) return false;
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        if (!p.customerName.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [proposals, userFilter, statusFilter, search]);
+
+  const stats = useMemo(() => {
+    const scope = userFilter === "all" ? proposals : proposals.filter((p) => p.createdBy === userFilter);
+    const approved = scope.filter((p) => p.status === "approved");
+    const drafts = scope.filter((p) => p.status === "draft");
+    const totalApprovedValue = approved.reduce((s, p) => s + (p.total || 0), 0);
+    return { total: scope.length, approved: approved.length, drafts: drafts.length, totalApprovedValue };
+  }, [proposals, userFilter]);
+
+  const initials = currentUser.split(" ").map((n) => n[0]).join("");
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
-      {/* Hero / Brand Header */}
+      {/* Top bar */}
+      <header className="sticky top-0 z-20 backdrop-blur bg-white/85 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src={avasyaLogo} alt="Avasya Teknoloji" className="h-9 w-auto" draggable={false} />
+            <div className="hidden md:block h-6 w-px bg-slate-200" />
+            <span className="hidden md:inline text-sm font-semibold text-slate-700 tracking-wide">
+              TEKLİF YÖNETİM SİSTEMİ
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs">
+                {initials}
+              </div>
+              <span className="text-sm font-medium text-slate-700">{currentUser}</span>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setCurrentUser(null)} className="text-slate-600">
+              <LogOut className="w-4 h-4 mr-1.5" />
+              Çıkış
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero */}
       <div className="relative overflow-hidden border-b border-slate-200 bg-white">
-        <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{
-          backgroundImage: "radial-gradient(circle at 1px 1px, hsl(0 0% 0%) 1px, transparent 0)",
-          backgroundSize: "24px 24px",
-        }} />
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-700 via-red-600 to-slate-900" />
-        <div className="max-w-5xl mx-auto px-6 lg:px-10 pt-14 pb-12 flex flex-col items-center text-center relative">
-          <img
-            src={avasyaLogo}
-            alt="Avasya Teknoloji"
-            className="h-24 md:h-28 w-auto mb-6 select-none"
-            draggable={false}
-          />
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-red-700 uppercase leading-tight">
-            Avasya Teknoloji<br className="md:hidden" /> Teklif Yönetim Sistemi
-          </h1>
-          <div className="mt-4 h-[3px] w-24 bg-red-700 rounded-full" />
-          <p className="mt-5 text-sm md:text-base text-slate-500 max-w-xl">
-            Profesyonel tekliflerinizi tek yerden oluşturun, düzenleyin ve PDF olarak dışa aktarın.
-          </p>
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
+                Hoş geldiniz, <span className="text-red-700">{currentUser.split(" ")[0]}</span>
+              </h1>
+              <p className="text-sm text-slate-500 mt-2">
+                Teklif yönetim panelinize göz atın, yeni teklif oluşturun veya mevcut teklifleri onaylayın.
+              </p>
+            </div>
+            <Button onClick={handleNewProposal} className="bg-red-700 hover:bg-red-800 text-white shadow-sm" size="lg">
+              <Plus className="w-4 h-4 mr-2" />
+              Yeni Teklif Oluştur
+            </Button>
+          </div>
+
+          {/* Stat cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+            <StatCard icon={<FileText className="w-5 h-5" />} label="Toplam Teklif" value={stats.total.toString()} accent="slate" />
+            <StatCard icon={<CheckCircle2 className="w-5 h-5" />} label="Onaylanan" value={stats.approved.toString()} accent="green" />
+            <StatCard icon={<Clock className="w-5 h-5" />} label="Taslak" value={stats.drafts.toString()} accent="amber" />
+            <StatCard
+              icon={<TrendingUp className="w-5 h-5" />}
+              label="Onaylanan Tutar"
+              value={`$${stats.totalApprovedValue.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}`}
+              accent="red"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 lg:px-10 py-10">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Teklifler</h2>
-            <p className="text-sm text-slate-500 mt-1">
-              {proposals.length > 0
-                ? `Toplam ${proposals.length} teklif`
-                : "Henüz hiç teklif oluşturulmadı"}
-            </p>
-          </div>
-          <Button
-            onClick={handleNewProposal}
-            className="bg-red-700 hover:bg-red-800 text-white shadow-sm"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Yeni Teklif Oluştur
-          </Button>
+      {/* Proposals */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Teklifler</h2>
+          <span className="text-sm text-slate-500">{visibleProposals.length} sonuç</span>
         </div>
+
+        {/* Filters */}
+        <Card className="p-4 mb-5 border border-slate-200 bg-white">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+            <div className="md:col-span-5 relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Input
+                placeholder="Müşteri adı ile ara..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <div className="md:col-span-4">
+              <Select value={userFilter} onValueChange={setUserFilter}>
+                <SelectTrigger>
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-slate-500" />
+                    <SelectValue placeholder="Kullanıcı" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tüm kullanıcılar</SelectItem>
+                  {USERS.map((u) => (
+                    <SelectItem key={u} value={u}>
+                      {u}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="md:col-span-3">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Durum" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tüm durumlar</SelectItem>
+                  <SelectItem value="approved">Onaylananlar</SelectItem>
+                  <SelectItem value="draft">Taslaklar</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </Card>
 
         {loading ? (
           <p className="text-center text-slate-500 py-16">Yükleniyor...</p>
-        ) : proposals.length === 0 ? (
+        ) : visibleProposals.length === 0 ? (
           <Card className="p-16 text-center border-dashed border-2 border-slate-300 bg-white/60">
             <div className="w-14 h-14 mx-auto rounded-full bg-red-50 flex items-center justify-center mb-4">
               <FileText className="w-7 h-7 text-red-700" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">
-              Henüz teklif bulunmuyor
-            </h3>
-            <p className="text-slate-500 mb-5">
-              İlk teklifinizi oluşturarak başlayın.
-            </p>
-            <Button
-              onClick={handleNewProposal}
-              className="bg-red-700 hover:bg-red-800 text-white"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Teklif Oluştur
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">Sonuç bulunamadı</h3>
+            <p className="text-slate-500 mb-5">Filtreleri değiştirin veya yeni bir teklif oluşturun.</p>
+            <Button onClick={handleNewProposal} className="bg-red-700 hover:bg-red-800 text-white">
+              <Plus className="w-4 h-4 mr-1" /> Teklif Oluştur
             </Button>
           </Card>
         ) : (
           <div className="grid gap-3">
-            {proposals.map((proposal) => (
+            {visibleProposals.map((proposal) => (
               <Card
                 key={proposal.id}
                 className="group p-5 cursor-pointer border border-slate-200 hover:border-red-700/40 hover:shadow-md transition-all bg-white"
                 onClick={async () => {
-                  const { data } = await supabase
-                    .from("proposals")
-                    .select("*")
-                    .eq("id", proposal.id)
-                    .single();
+                  const { data } = await supabase.from("proposals").select("*").eq("id", proposal.id).single();
                   if (data?.full_data) {
                     setEditingProposal({ ...(data.full_data as any), id: data.id });
                   } else {
-                    setEditingProposal({ id: data?.id, customerName: data?.customer_name, date: data?.date, currency: data?.currency });
+                    setEditingProposal({
+                      id: data?.id,
+                      customerName: data?.customer_name,
+                      date: data?.date,
+                      currency: data?.currency,
+                    });
                   }
                   setIsEditing(true);
                 }}
@@ -190,25 +323,50 @@ export default function HomePage() {
                       <FileText className="w-5 h-5 text-white" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="font-semibold text-slate-900 truncate group-hover:text-red-700 transition-colors">
-                        {proposal.customerName || "İsimsiz Müşteri"}
-                      </h4>
-                      <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5">
-                        <Calendar className="w-3 h-3" />
-                        {proposal.date || "Tarihsiz"}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-semibold text-slate-900 truncate group-hover:text-red-700 transition-colors">
+                          {proposal.customerName || "İsimsiz Müşteri"}
+                        </h4>
+                        {proposal.status === "approved" && (
+                          <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border border-green-200 font-medium">
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Onaylandı
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1 flex items-center gap-3 flex-wrap">
+                        <span className="inline-flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {proposal.date || "Tarihsiz"}
+                        </span>
+                        {proposal.createdBy && (
+                          <span className="inline-flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {proposal.createdBy}
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
-                  <span className="font-bold text-slate-900 text-lg tabular-nums whitespace-nowrap">
-                    {proposal.currency === "TRY"
-                      ? "₺"
-                      : proposal.currency === "USD"
-                      ? "$"
-                      : "€"}
-                    {proposal.total.toLocaleString("tr-TR", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-slate-900 text-lg tabular-nums whitespace-nowrap">
+                      {proposal.currency === "TRY" ? "₺" : proposal.currency === "USD" ? "$" : "€"}
+                      {proposal.total.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
+                    </span>
+                    <Button
+                      variant={proposal.status === "approved" ? "default" : "outline"}
+                      size="sm"
+                      onClick={(e) => toggleApproval(e, proposal)}
+                      className={
+                        proposal.status === "approved"
+                          ? "bg-green-600 hover:bg-green-700 text-white"
+                          : "border-slate-300 text-slate-700 hover:border-green-600 hover:text-green-700"
+                      }
+                    >
+                      <Check className="w-4 h-4 mr-1" />
+                      {proposal.status === "approved" ? "Onaylı" : "Onayla"}
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
@@ -216,5 +374,35 @@ export default function HomePage() {
         )}
       </div>
     </div>
+  );
+}
+
+function StatCard({
+  icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  accent: "slate" | "green" | "amber" | "red";
+}) {
+  const tones: Record<string, string> = {
+    slate: "bg-slate-100 text-slate-700",
+    green: "bg-green-100 text-green-700",
+    amber: "bg-amber-100 text-amber-700",
+    red: "bg-red-100 text-red-700",
+  };
+  return (
+    <Card className="p-5 border border-slate-200 bg-white">
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tones[accent]}`}>{icon}</div>
+        <div className="min-w-0">
+          <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</div>
+          <div className="text-2xl font-bold text-slate-900 tabular-nums truncate">{value}</div>
+        </div>
+      </div>
+    </Card>
   );
 }

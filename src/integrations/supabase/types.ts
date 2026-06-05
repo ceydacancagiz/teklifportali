@@ -17,6 +17,7 @@ export type Database = {
       proposals: {
         Row: {
           created_at: string
+          created_by: string | null
           currency: string | null
           customer_name: string | null
           date: string | null
@@ -26,11 +27,13 @@ export type Database = {
           items: Json | null
           kit_items: Json | null
           notes: string | null
+          status: string
           total: number | null
           updated_at: string
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           currency?: string | null
           customer_name?: string | null
           date?: string | null
@@ -40,11 +43,13 @@ export type Database = {
           items?: Json | null
           kit_items?: Json | null
           notes?: string | null
+          status?: string
           total?: number | null
           updated_at?: string
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           currency?: string | null
           customer_name?: string | null
           date?: string | null
@@ -54,6 +59,7 @@ export type Database = {
           items?: Json | null
           kit_items?: Json | null
           notes?: string | null
+          status?: string
           total?: number | null
           updated_at?: string
         }
