@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Plus, FileText } from "lucide-react";
+import { Plus, FileText, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ProposalEditor from "@/components/ProposalEditor";
 import { supabase } from "@/integrations/supabase/client";
 import type { Proposal } from "@/types/proposal";
 import { useToast } from "@/hooks/use-toast";
+import avasyaLogo from "@/assets/avasya-logo.png";
 
 export default function HomePage() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
