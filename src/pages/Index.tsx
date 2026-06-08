@@ -291,9 +291,10 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <div className="relative overflow-hidden border-b border-slate-200 bg-white">
+      <div className="relative overflow-hidden border-b border-slate-200 bg-white animate-fade-in">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-700 via-red-600 to-slate-900" />
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-red-100/40 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
@@ -303,22 +304,26 @@ export default function HomePage() {
                 Tüm tekliflerin genel görünümü. Yeni teklif oluşturun veya mevcutları yönetin.
               </p>
             </div>
-            <Button onClick={handleNewProposal} className="bg-red-700 hover:bg-red-800 text-white shadow-sm" size="lg">
-              <Plus className="w-4 h-4 mr-2" />
+            <Button
+              onClick={handleNewProposal}
+              className="bg-red-700 hover:bg-red-800 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group"
+              size="lg"
+            >
+              <Plus className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:rotate-90" />
               Yeni Teklif Oluştur
             </Button>
           </div>
 
-          {/* Stat cards (always overall) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-            <StatCard icon={<FileText className="w-5 h-5" />} label="Toplam Teklif" value={stats.total.toString()} accent="slate" />
-            <StatCard icon={<CheckCircle2 className="w-5 h-5" />} label="Onaylanan" value={stats.approved.toString()} accent="green" />
-            <StatCard icon={<Clock className="w-5 h-5" />} label="Taslak" value={stats.drafts.toString()} accent="amber" />
+            <StatCard icon={<FileText className="w-5 h-5" />} label="Toplam Teklif" value={stats.total.toString()} accent="slate" delay={0} />
+            <StatCard icon={<CheckCircle2 className="w-5 h-5" />} label="Onaylanan" value={stats.approved.toString()} accent="green" delay={60} />
+            <StatCard icon={<Clock className="w-5 h-5" />} label="Taslak" value={stats.drafts.toString()} accent="amber" delay={120} />
             <StatCard
               icon={<TrendingUp className="w-5 h-5" />}
               label="Onaylanan Tutar"
               value={`$${stats.totalApprovedValue.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}`}
               accent="red"
+              delay={180}
             />
           </div>
         </div>
