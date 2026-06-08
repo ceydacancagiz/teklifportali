@@ -480,11 +480,13 @@ function StatCard({
   label,
   value,
   accent,
+  delay = 0,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   accent: "slate" | "green" | "amber" | "red";
+  delay?: number;
 }) {
   const tones: Record<string, string> = {
     slate: "bg-slate-100 text-slate-700",
@@ -493,9 +495,14 @@ function StatCard({
     red: "bg-red-100 text-red-700",
   };
   return (
-    <Card className="p-5 border border-slate-200 bg-white">
+    <Card
+      className="p-5 border border-slate-200 bg-white animate-fade-in hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+      style={{ animationDelay: `${delay}ms`, animationFillMode: "backwards" }}
+    >
       <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tones[accent]}`}>{icon}</div>
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tones[accent]} transition-transform duration-300 hover:scale-110`}>
+          {icon}
+        </div>
         <div className="min-w-0">
           <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</div>
           <div className="text-2xl font-bold text-slate-900 tabular-nums truncate">{value}</div>
