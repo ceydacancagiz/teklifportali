@@ -396,10 +396,11 @@ export default function HomePage() {
           </Card>
         ) : (
           <div className="grid gap-3">
-            {visibleProposals.map((proposal) => (
+            {visibleProposals.map((proposal, idx) => (
               <Card
                 key={proposal.id}
-                className="group p-5 cursor-pointer border border-slate-200 hover:border-red-700/40 hover:shadow-md transition-all bg-white"
+                className="group p-5 cursor-pointer border border-slate-200 hover:border-red-700/40 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 bg-white animate-fade-in"
+                style={{ animationDelay: `${Math.min(idx * 40, 400)}ms`, animationFillMode: "backwards" }}
                 onClick={async () => {
                   const { data } = await supabase.from("proposals").select("*").eq("id", proposal.id).single();
                   if (data?.full_data) {
@@ -417,7 +418,7 @@ export default function HomePage() {
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center flex-shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
                       <FileText className="w-5 h-5 text-white" />
                     </div>
                     <div className="min-w-0">
