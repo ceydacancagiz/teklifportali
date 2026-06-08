@@ -228,28 +228,33 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
       {/* Top bar */}
       <header className="sticky top-0 z-20 backdrop-blur bg-white/85 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={avasyaLogo} alt="Avasya Teknoloji" className="h-9 w-auto" draggable={false} />
-            <div className="hidden md:block h-6 w-px bg-slate-200" />
-            <span className="hidden md:inline text-sm font-semibold text-slate-700 tracking-wide">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-24 flex items-center justify-between">
+          <div className="flex items-center gap-4 group">
+            <img
+              src={avasyaLogo}
+              alt="Avasya Teknoloji"
+              className="h-14 md:h-16 w-auto transition-transform duration-300 group-hover:scale-105"
+              draggable={false}
+            />
+            <div className="hidden md:block h-10 w-px bg-slate-200" />
+            <span className="hidden md:inline text-lg lg:text-xl font-bold text-slate-800 tracking-wider">
               TEKLİF YÖNETİM SİSTEMİ
             </span>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 hover:border-red-700/40 hover:bg-white transition-all">
+              <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-red-700/40 hover:bg-white hover:shadow-sm transition-all duration-200">
                 {currentUser ? (
                   <>
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs shadow-sm">
                       {initials}
                     </div>
                     <span className="text-sm font-medium text-slate-700">{currentUser}</span>
                   </>
                 ) : (
                   <>
-                    <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
                       <UserIcon className="w-4 h-4" />
                     </div>
                     <span className="text-sm font-medium text-slate-600">Profil</span>
@@ -257,16 +262,14 @@ export default function HomePage() {
                 )}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-60 animate-scale-in">
               <DropdownMenuLabel>Profil seç</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {USERS.map((name) => (
                 <DropdownMenuItem
                   key={name}
-                  onClick={() => {
-                    setCurrentUser(name);
-                    setUserFilter(name);
-                  }}
+                  onClick={() => setCurrentUser(name)}
+                  className="cursor-pointer"
                 >
                   <div className="w-6 h-6 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-[10px] mr-2">
                     {name.split(" ").map((n) => n[0]).join("")}
@@ -277,12 +280,7 @@ export default function HomePage() {
               {currentUser && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setCurrentUser(null);
-                      setUserFilter("all");
-                    }}
-                  >
+                  <DropdownMenuItem onClick={() => setCurrentUser(null)} className="cursor-pointer">
                     Profili temizle
                   </DropdownMenuItem>
                 </>
@@ -293,9 +291,10 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <div className="relative overflow-hidden border-b border-slate-200 bg-white">
+      <div className="relative overflow-hidden border-b border-slate-200 bg-white animate-fade-in">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-700 via-red-600 to-slate-900" />
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-red-100/40 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
@@ -305,22 +304,26 @@ export default function HomePage() {
                 Tüm tekliflerin genel görünümü. Yeni teklif oluşturun veya mevcutları yönetin.
               </p>
             </div>
-            <Button onClick={handleNewProposal} className="bg-red-700 hover:bg-red-800 text-white shadow-sm" size="lg">
-              <Plus className="w-4 h-4 mr-2" />
+            <Button
+              onClick={handleNewProposal}
+              className="bg-red-700 hover:bg-red-800 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group"
+              size="lg"
+            >
+              <Plus className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:rotate-90" />
               Yeni Teklif Oluştur
             </Button>
           </div>
 
-          {/* Stat cards (always overall) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-            <StatCard icon={<FileText className="w-5 h-5" />} label="Toplam Teklif" value={stats.total.toString()} accent="slate" />
-            <StatCard icon={<CheckCircle2 className="w-5 h-5" />} label="Onaylanan" value={stats.approved.toString()} accent="green" />
-            <StatCard icon={<Clock className="w-5 h-5" />} label="Taslak" value={stats.drafts.toString()} accent="amber" />
+            <StatCard icon={<FileText className="w-5 h-5" />} label="Toplam Teklif" value={stats.total.toString()} accent="slate" delay={0} />
+            <StatCard icon={<CheckCircle2 className="w-5 h-5" />} label="Onaylanan" value={stats.approved.toString()} accent="green" delay={60} />
+            <StatCard icon={<Clock className="w-5 h-5" />} label="Taslak" value={stats.drafts.toString()} accent="amber" delay={120} />
             <StatCard
               icon={<TrendingUp className="w-5 h-5" />}
               label="Onaylanan Tutar"
               value={`$${stats.totalApprovedValue.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}`}
               accent="red"
+              delay={180}
             />
           </div>
         </div>
@@ -393,10 +396,11 @@ export default function HomePage() {
           </Card>
         ) : (
           <div className="grid gap-3">
-            {visibleProposals.map((proposal) => (
+            {visibleProposals.map((proposal, idx) => (
               <Card
                 key={proposal.id}
-                className="group p-5 cursor-pointer border border-slate-200 hover:border-red-700/40 hover:shadow-md transition-all bg-white"
+                className="group p-5 cursor-pointer border border-slate-200 hover:border-red-700/40 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 bg-white animate-fade-in"
+                style={{ animationDelay: `${Math.min(idx * 40, 400)}ms`, animationFillMode: "backwards" }}
                 onClick={async () => {
                   const { data } = await supabase.from("proposals").select("*").eq("id", proposal.id).single();
                   if (data?.full_data) {
@@ -414,7 +418,7 @@ export default function HomePage() {
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center flex-shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
                       <FileText className="w-5 h-5 text-white" />
                     </div>
                     <div className="min-w-0">
@@ -477,11 +481,13 @@ function StatCard({
   label,
   value,
   accent,
+  delay = 0,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   accent: "slate" | "green" | "amber" | "red";
+  delay?: number;
 }) {
   const tones: Record<string, string> = {
     slate: "bg-slate-100 text-slate-700",
@@ -490,9 +496,14 @@ function StatCard({
     red: "bg-red-100 text-red-700",
   };
   return (
-    <Card className="p-5 border border-slate-200 bg-white">
+    <Card
+      className="p-5 border border-slate-200 bg-white animate-fade-in hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+      style={{ animationDelay: `${delay}ms`, animationFillMode: "backwards" }}
+    >
       <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tones[accent]}`}>{icon}</div>
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tones[accent]} transition-transform duration-300 hover:scale-110`}>
+          {icon}
+        </div>
         <div className="min-w-0">
           <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</div>
           <div className="text-2xl font-bold text-slate-900 tabular-nums truncate">{value}</div>
