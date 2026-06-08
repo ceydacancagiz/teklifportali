@@ -228,28 +228,33 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
       {/* Top bar */}
       <header className="sticky top-0 z-20 backdrop-blur bg-white/85 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={avasyaLogo} alt="Avasya Teknoloji" className="h-9 w-auto" draggable={false} />
-            <div className="hidden md:block h-6 w-px bg-slate-200" />
-            <span className="hidden md:inline text-sm font-semibold text-slate-700 tracking-wide">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-24 flex items-center justify-between">
+          <div className="flex items-center gap-4 group">
+            <img
+              src={avasyaLogo}
+              alt="Avasya Teknoloji"
+              className="h-14 md:h-16 w-auto transition-transform duration-300 group-hover:scale-105"
+              draggable={false}
+            />
+            <div className="hidden md:block h-10 w-px bg-slate-200" />
+            <span className="hidden md:inline text-lg lg:text-xl font-bold text-slate-800 tracking-wider">
               TEKLİF YÖNETİM SİSTEMİ
             </span>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 hover:border-red-700/40 hover:bg-white transition-all">
+              <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-red-700/40 hover:bg-white hover:shadow-sm transition-all duration-200">
                 {currentUser ? (
                   <>
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs shadow-sm">
                       {initials}
                     </div>
                     <span className="text-sm font-medium text-slate-700">{currentUser}</span>
                   </>
                 ) : (
                   <>
-                    <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
                       <UserIcon className="w-4 h-4" />
                     </div>
                     <span className="text-sm font-medium text-slate-600">Profil</span>
@@ -257,16 +262,14 @@ export default function HomePage() {
                 )}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-60 animate-scale-in">
               <DropdownMenuLabel>Profil seç</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {USERS.map((name) => (
                 <DropdownMenuItem
                   key={name}
-                  onClick={() => {
-                    setCurrentUser(name);
-                    setUserFilter(name);
-                  }}
+                  onClick={() => setCurrentUser(name)}
+                  className="cursor-pointer"
                 >
                   <div className="w-6 h-6 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-[10px] mr-2">
                     {name.split(" ").map((n) => n[0]).join("")}
@@ -277,12 +280,7 @@ export default function HomePage() {
               {currentUser && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setCurrentUser(null);
-                      setUserFilter("all");
-                    }}
-                  >
+                  <DropdownMenuItem onClick={() => setCurrentUser(null)} className="cursor-pointer">
                     Profili temizle
                   </DropdownMenuItem>
                 </>
