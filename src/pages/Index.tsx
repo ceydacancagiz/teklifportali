@@ -1,10 +1,37 @@
 import { useState, useEffect, useMemo } from "react";
-import { Plus, FileText, Calendar, Check, Search, LogOut, CheckCircle2, Clock, TrendingUp, Users } from "lucide-react";
+import {
+  Plus,
+  FileText,
+  Calendar,
+  Check,
+  Search,
+  CheckCircle2,
+  Clock,
+  TrendingUp,
+  Users,
+  User as UserIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import ProposalEditor from "@/components/ProposalEditor";
 import { supabase } from "@/integrations/supabase/client";
 import type { Proposal } from "@/types/proposal";
@@ -21,6 +48,8 @@ export default function HomePage() {
   const [userFilter, setUserFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [pendingSave, setPendingSave] = useState<any | null>(null);
+  const [pendingName, setPendingName] = useState<string>("");
   const { toast } = useToast();
   const currentUser = useCurrentUser();
 
@@ -50,8 +79,8 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    if (currentUser) fetchProposals();
-  }, [currentUser]);
+    fetchProposals();
+  }, []);
 
   const handleNewProposal = () => {
     setEditingProposal(null);
@@ -64,7 +93,7 @@ export default function HomePage() {
     fetchProposals();
   };
 
-  const handleSave = async (proposal: any) => {
+  const persistProposal = async (proposal: any, createdByName?: string) => {
     const row: any = {
       customer_name: proposal.customerName || "",
       date: proposal.date || "",
@@ -81,7 +110,7 @@ export default function HomePage() {
       const result = await supabase.from("proposals").update(row).eq("id", proposal.id);
       error = result.error;
     } else {
-      row.created_by = currentUser;
+      row.created_by = createdByName || currentUser || "";
       row.status = "draft";
       const result = await supabase.from("proposals").insert(row);
       error = result.error;
@@ -96,7 +125,20 @@ export default function HomePage() {
     toast({ title: "Başarılı", description: "Teklif kaydedildi." });
     setIsEditing(false);
     setEditingProposal(null);
+    setPendingSave(null);
+    setPendingName("");
     fetchProposals();
+  };
+
+  const handleSave = async (proposal: any) => {
+    const isNew = !proposal.id || (typeof proposal.id === "string" && proposal.id.startsWith("new-"));
+    if (isNew) {
+      // Ask who is saving
+      setPendingName(currentUser || "");
+      setPendingSave(proposal);
+      return;
+    }
+    await persistProposal(proposal);
   };
 
   const toggleApproval = async (e: React.MouseEvent, p: Proposal) => {
@@ -110,42 +152,55 @@ export default function HomePage() {
     setProposals((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus } : x)));
   };
 
-  // --- Profile picker screen ---
-  if (!currentUser) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 flex items-center justify-center p-6">
-        <div className="w-full max-w-2xl">
-          <div className="text-center mb-10">
-            <img src={avasyaLogo} alt="Avasya Teknoloji" className="h-20 md:h-24 w-auto mx-auto mb-6 select-none" draggable={false} />
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-red-700 uppercase">
-              Avasya Teknoloji Teklif Yönetim Sistemi
-            </h1>
-            <p className="mt-3 text-sm text-slate-500">Devam etmek için profilinizi seçin</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {USERS.map((name) => (
-              <button
-                key={name}
-                onClick={() => setCurrentUser(name)}
-                className="group flex items-center gap-4 p-5 rounded-xl border border-slate-200 bg-white hover:border-red-700/40 hover:shadow-md transition-all text-left"
-              >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
-                  {name.split(" ").map((n) => n[0]).join("")}
-                </div>
-                <div>
-                  <div className="font-semibold text-slate-900 group-hover:text-red-700 transition-colors">{name}</div>
-                  <div className="text-xs text-slate-500">Avasya Teknoloji</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (isEditing) {
-    return <ProposalEditor onBack={handleBack} onSave={handleSave} proposal={editingProposal} />;
+    return (
+      <>
+        <ProposalEditor onBack={handleBack} onSave={handleSave} proposal={editingProposal} />
+        <Dialog open={!!pendingSave} onOpenChange={(o) => !o && setPendingSave(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Teklifi kim kaydediyor?</DialogTitle>
+              <DialogDescription>
+                Teklifin yanında görünmesi için lütfen adınızı seçin.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2">
+              {USERS.map((name) => (
+                <button
+                  key={name}
+                  onClick={() => setPendingName(name)}
+                  className={`flex items-center gap-3 p-3 rounded-lg border text-left transition-all ${
+                    pendingName === name
+                      ? "border-red-700 bg-red-50"
+                      : "border-slate-200 hover:border-red-700/40 hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs">
+                    {name.split(" ").map((n) => n[0]).join("")}
+                  </div>
+                  <span className="font-medium text-slate-900 text-sm">{name}</span>
+                </button>
+              ))}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setPendingSave(null)}>
+                İptal
+              </Button>
+              <Button
+                disabled={!pendingName}
+                onClick={() => {
+                  setCurrentUser(pendingName);
+                  persistProposal(pendingSave, pendingName);
+                }}
+                className="bg-red-700 hover:bg-red-800 text-white"
+              >
+                Kaydet
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
   }
 
   const visibleProposals = useMemo(() => {
@@ -161,14 +216,13 @@ export default function HomePage() {
   }, [proposals, userFilter, statusFilter, search]);
 
   const stats = useMemo(() => {
-    const scope = userFilter === "all" ? proposals : proposals.filter((p) => p.createdBy === userFilter);
-    const approved = scope.filter((p) => p.status === "approved");
-    const drafts = scope.filter((p) => p.status === "draft");
+    const approved = proposals.filter((p) => p.status === "approved");
+    const drafts = proposals.filter((p) => p.status === "draft");
     const totalApprovedValue = approved.reduce((s, p) => s + (p.total || 0), 0);
-    return { total: scope.length, approved: approved.length, drafts: drafts.length, totalApprovedValue };
-  }, [proposals, userFilter]);
+    return { total: proposals.length, approved: approved.length, drafts: drafts.length, totalApprovedValue };
+  }, [proposals]);
 
-  const initials = currentUser.split(" ").map((n) => n[0]).join("");
+  const initials = currentUser ? currentUser.split(" ").map((n) => n[0]).join("") : "";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
@@ -182,18 +236,59 @@ export default function HomePage() {
               TEKLİF YÖNETİM SİSTEMİ
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs">
-                {initials}
-              </div>
-              <span className="text-sm font-medium text-slate-700">{currentUser}</span>
-            </div>
-            <Button variant="outline" size="sm" onClick={() => setCurrentUser(null)} className="text-slate-600">
-              <LogOut className="w-4 h-4 mr-1.5" />
-              Çıkış
-            </Button>
-          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 hover:border-red-700/40 hover:bg-white transition-all">
+                {currentUser ? (
+                  <>
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs">
+                      {initials}
+                    </div>
+                    <span className="text-sm font-medium text-slate-700">{currentUser}</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
+                      <UserIcon className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-600">Profil</span>
+                  </>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Profil seç</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {USERS.map((name) => (
+                <DropdownMenuItem
+                  key={name}
+                  onClick={() => {
+                    setCurrentUser(name);
+                    setUserFilter(name);
+                  }}
+                >
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-[10px] mr-2">
+                    {name.split(" ").map((n) => n[0]).join("")}
+                  </div>
+                  {name}
+                </DropdownMenuItem>
+              ))}
+              {currentUser && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setCurrentUser(null);
+                      setUserFilter("all");
+                    }}
+                  >
+                    Profili temizle
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
@@ -204,10 +299,10 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
-                Hoş geldiniz, <span className="text-red-700">{currentUser.split(" ")[0]}</span>
+                <span className="text-red-700">Teklif Yönetim</span> Paneli
               </h1>
               <p className="text-sm text-slate-500 mt-2">
-                Teklif yönetim panelinize göz atın, yeni teklif oluşturun veya mevcut teklifleri onaylayın.
+                Tüm tekliflerin genel görünümü. Yeni teklif oluşturun veya mevcutları yönetin.
               </p>
             </div>
             <Button onClick={handleNewProposal} className="bg-red-700 hover:bg-red-800 text-white shadow-sm" size="lg">
@@ -216,7 +311,7 @@ export default function HomePage() {
             </Button>
           </div>
 
-          {/* Stat cards */}
+          {/* Stat cards (always overall) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
             <StatCard icon={<FileText className="w-5 h-5" />} label="Toplam Teklif" value={stats.total.toString()} accent="slate" />
             <StatCard icon={<CheckCircle2 className="w-5 h-5" />} label="Onaylanan" value={stats.approved.toString()} accent="green" />
