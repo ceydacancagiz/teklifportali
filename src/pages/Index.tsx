@@ -152,6 +152,25 @@ export default function HomePage() {
     setProposals((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus } : x)));
   };
 
+  const visibleProposals = useMemo(() => {
+    return proposals.filter((p) => {
+      if (userFilter !== "all" && p.createdBy !== userFilter) return false;
+      if (statusFilter !== "all" && p.status !== statusFilter) return false;
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        if (!p.customerName.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [proposals, userFilter, statusFilter, search]);
+
+  const stats = useMemo(() => {
+    const approved = proposals.filter((p) => p.status === "approved");
+    const drafts = proposals.filter((p) => p.status === "draft");
+    const totalApprovedValue = approved.reduce((s, p) => s + (p.total || 0), 0);
+    return { total: proposals.length, approved: approved.length, drafts: drafts.length, totalApprovedValue };
+  }, [proposals]);
+
   if (isEditing) {
     return (
       <>
@@ -189,7 +208,6 @@ export default function HomePage() {
               <Button
                 disabled={!pendingName}
                 onClick={() => {
-                  setCurrentUser(pendingName);
                   persistProposal(pendingSave, pendingName);
                 }}
                 className="bg-red-700 hover:bg-red-800 text-white"
@@ -203,24 +221,7 @@ export default function HomePage() {
     );
   }
 
-  const visibleProposals = useMemo(() => {
-    return proposals.filter((p) => {
-      if (userFilter !== "all" && p.createdBy !== userFilter) return false;
-      if (statusFilter !== "all" && p.status !== statusFilter) return false;
-      if (search.trim()) {
-        const q = search.toLowerCase();
-        if (!p.customerName.toLowerCase().includes(q)) return false;
-      }
-      return true;
-    });
-  }, [proposals, userFilter, statusFilter, search]);
 
-  const stats = useMemo(() => {
-    const approved = proposals.filter((p) => p.status === "approved");
-    const drafts = proposals.filter((p) => p.status === "draft");
-    const totalApprovedValue = approved.reduce((s, p) => s + (p.total || 0), 0);
-    return { total: proposals.length, approved: approved.length, drafts: drafts.length, totalApprovedValue };
-  }, [proposals]);
 
   const initials = currentUser ? currentUser.split(" ").map((n) => n[0]).join("") : "";
 
@@ -245,22 +246,12 @@ export default function HomePage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-red-700/40 hover:bg-white hover:shadow-sm transition-all duration-200">
-                {currentUser ? (
-                  <>
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                      {initials}
-                    </div>
-                    <span className="text-sm font-medium text-slate-700">{currentUser}</span>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
-                      <UserIcon className="w-4 h-4" />
-                    </div>
-                    <span className="text-sm font-medium text-slate-600">Profil</span>
-                  </>
-                )}
+                <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
+                  <UserIcon className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-medium text-slate-600">Profil</span>
               </button>
+
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-60 animate-scale-in">
               <DropdownMenuLabel>Profil seç</DropdownMenuLabel>
