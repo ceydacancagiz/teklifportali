@@ -152,6 +152,25 @@ export default function HomePage() {
     setProposals((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus } : x)));
   };
 
+  const visibleProposals = useMemo(() => {
+    return proposals.filter((p) => {
+      if (userFilter !== "all" && p.createdBy !== userFilter) return false;
+      if (statusFilter !== "all" && p.status !== statusFilter) return false;
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        if (!p.customerName.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [proposals, userFilter, statusFilter, search]);
+
+  const stats = useMemo(() => {
+    const approved = proposals.filter((p) => p.status === "approved");
+    const drafts = proposals.filter((p) => p.status === "draft");
+    const totalApprovedValue = approved.reduce((s, p) => s + (p.total || 0), 0);
+    return { total: proposals.length, approved: approved.length, drafts: drafts.length, totalApprovedValue };
+  }, [proposals]);
+
   if (isEditing) {
     return (
       <>
@@ -189,7 +208,6 @@ export default function HomePage() {
               <Button
                 disabled={!pendingName}
                 onClick={() => {
-                  setCurrentUser(pendingName);
                   persistProposal(pendingSave, pendingName);
                 }}
                 className="bg-red-700 hover:bg-red-800 text-white"
@@ -203,24 +221,7 @@ export default function HomePage() {
     );
   }
 
-  const visibleProposals = useMemo(() => {
-    return proposals.filter((p) => {
-      if (userFilter !== "all" && p.createdBy !== userFilter) return false;
-      if (statusFilter !== "all" && p.status !== statusFilter) return false;
-      if (search.trim()) {
-        const q = search.toLowerCase();
-        if (!p.customerName.toLowerCase().includes(q)) return false;
-      }
-      return true;
-    });
-  }, [proposals, userFilter, statusFilter, search]);
 
-  const stats = useMemo(() => {
-    const approved = proposals.filter((p) => p.status === "approved");
-    const drafts = proposals.filter((p) => p.status === "draft");
-    const totalApprovedValue = approved.reduce((s, p) => s + (p.total || 0), 0);
-    return { total: proposals.length, approved: approved.length, drafts: drafts.length, totalApprovedValue };
-  }, [proposals]);
 
   const initials = currentUser ? currentUser.split(" ").map((n) => n[0]).join("") : "";
 
