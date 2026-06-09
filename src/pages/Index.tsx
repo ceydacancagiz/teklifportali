@@ -246,22 +246,12 @@ export default function HomePage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-red-700/40 hover:bg-white hover:shadow-sm transition-all duration-200">
-                {currentUser ? (
-                  <>
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                      {initials}
-                    </div>
-                    <span className="text-sm font-medium text-slate-700">{currentUser}</span>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
-                      <UserIcon className="w-4 h-4" />
-                    </div>
-                    <span className="text-sm font-medium text-slate-600">Profil</span>
-                  </>
-                )}
+                <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
+                  <UserIcon className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-medium text-slate-600">Profil</span>
               </button>
+
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-60 animate-scale-in">
               <DropdownMenuLabel>Profil seç</DropdownMenuLabel>
