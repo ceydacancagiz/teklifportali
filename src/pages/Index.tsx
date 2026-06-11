@@ -10,7 +10,9 @@ import {
   TrendingUp,
   Users,
   User as UserIcon,
-} from "lucide-react";
+  Sun,
+  Moon,
+}  from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
