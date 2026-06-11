@@ -230,7 +230,7 @@ export default function HomePage() {
   const initials = currentUser ? currentUser.split(" ").map((n) => n[0]).join("") : "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors">
+    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors">
       {/* Top bar */}
       <header className="sticky top-0 z-20 backdrop-blur bg-white/85 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 h-24 flex items-center justify-between">
@@ -308,8 +308,7 @@ export default function HomePage() {
 
       {/* Hero */}
       <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 animate-fade-in">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-700 via-red-600 to-slate-900" />
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-red-100/40 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-red-700 dark:bg-red-600" />
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
@@ -472,7 +471,7 @@ export default function HomePage() {
                       className={
                         proposal.status === "approved"
                           ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "border-slate-300 text-slate-700 hover:border-green-600 hover:text-green-700"
+                          : "border-slate-300 text-slate-700 dark:text-slate-100 hover:border-green-600 hover:text-green-700 dark:hover:text-green-400"
                       }
                     >
                       <Check className="w-4 h-4 mr-1" />
