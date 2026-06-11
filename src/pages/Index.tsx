@@ -503,14 +503,14 @@ function StatCard({
   delay?: number;
 }) {
   const tones: Record<string, string> = {
-    slate: "bg-slate-100 text-slate-700",
-    green: "bg-green-100 text-green-700",
-    amber: "bg-amber-100 text-amber-700",
-    red: "bg-red-100 text-red-700",
+    slate: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200",
+    green: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
+    amber: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
+    red: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
   };
   return (
     <Card
-      className="p-5 border border-slate-200 bg-white animate-fade-in hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+      className="p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 animate-fade-in hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
       style={{ animationDelay: `${delay}ms`, animationFillMode: "backwards" }}
     >
       <div className="flex items-center gap-3">
@@ -518,8 +518,8 @@ function StatCard({
           {icon}
         </div>
         <div className="min-w-0">
-          <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</div>
-          <div className="text-2xl font-bold text-slate-900 tabular-nums truncate">{value}</div>
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{label}</div>
+          <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums truncate">{value}</div>
         </div>
       </div>
     </Card>
