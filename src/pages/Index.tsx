@@ -307,7 +307,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <div className="relative overflow-hidden border-b border-slate-200 bg-white animate-fade-in">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 animate-fade-in">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-700 via-red-600 to-slate-900" />
         <div className="absolute -top-32 -right-32 w-96 h-96 bg-red-100/40 rounded-full blur-3xl pointer-events-none" />
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-10">
