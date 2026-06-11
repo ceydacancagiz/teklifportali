@@ -55,6 +55,7 @@ export default function HomePage() {
   const [pendingName, setPendingName] = useState<string>("");
   const { toast } = useToast();
   const currentUser = useCurrentUser();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const fetchProposals = async () => {
     const { data, error } = await supabase
