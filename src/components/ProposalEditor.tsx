@@ -35,7 +35,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       "Göstermiş olduğunuz ilgi ve güven için teşekkür ederiz. Talep etmiş olduğunuz ürün/hizmetlerimize yönelik teklifimiz aşağıda değerlendirmelerinize sunulmuştur. Teklifimiz hakkında her türlü soru ve görüşlerinizi bekler, iyi çalışmalar dileriz. Saygılarımızla,",
     paymentTerms:
       proposal?.paymentTerms ||
-      "Teklifimizde yer alan fiyatlar US DolarI cinsinden verilmiş olup, KDV dahil değildir.\nDöviz dönüşümlerine fatura tarihindeki T.C.M.B Döviz satış kuru kullanılacaktır.\nTeklifimizde yer alan hizmetlerin faturası hizmetin tamamlanmasını müteakip tek seferde fatura edilecek olup, ödeme vadesi 30 gündür.",
+      "Teklifimizde yer alan fiyatlar US Doları cinsinden verilmiş olup, KDV dahil değildir.\nDöviz dönüşümlerine ödeme tarihindeki T.C.M.B Döviz satış kuru kullanılacaktır.\nTeklifimizde yer alan hizmetlerin faturası hizmetin tamamlanmasını müteakip tek seferde fatura edilecek olup, ödeme vadesi 30 gündür.",
     validityPeriod:
       proposal?.validityPeriod || "Teklifimiz gizli olup, 15 gün süre ile geçerlidir",
     footerText:

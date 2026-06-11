@@ -10,7 +10,9 @@ import {
   TrendingUp,
   Users,
   User as UserIcon,
-} from "lucide-react";
+  Sun,
+  Moon,
+}  from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -38,6 +40,7 @@ import type { Proposal } from "@/types/proposal";
 import { USERS } from "@/types/proposal";
 import { useToast } from "@/hooks/use-toast";
 import { useCurrentUser, setCurrentUser } from "@/hooks/useCurrentUser";
+import { useTheme } from "@/hooks/useTheme";
 import avasyaLogo from "@/assets/avasya-logo.png";
 
 export default function HomePage() {
@@ -52,6 +55,7 @@ export default function HomePage() {
   const [pendingName, setPendingName] = useState<string>("");
   const { toast } = useToast();
   const currentUser = useCurrentUser();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const fetchProposals = async () => {
     const { data, error } = await supabase
@@ -226,9 +230,9 @@ export default function HomePage() {
   const initials = currentUser ? currentUser.split(" ").map((n) => n[0]).join("") : "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors">
       {/* Top bar */}
-      <header className="sticky top-0 z-20 backdrop-blur bg-white/85 border-b border-slate-200">
+      <header className="sticky top-0 z-20 backdrop-blur bg-white/85 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 h-24 flex items-center justify-between">
           <div className="flex items-center gap-4 group">
             <img
@@ -237,61 +241,79 @@ export default function HomePage() {
               className="h-14 md:h-16 w-auto transition-transform duration-300 group-hover:scale-105"
               draggable={false}
             />
-            <div className="hidden md:block h-10 w-px bg-slate-200" />
-            <span className="hidden md:inline text-lg lg:text-xl font-bold text-slate-800 tracking-wider">
+            <div className="hidden md:block h-10 w-px bg-slate-200 dark:bg-slate-700" />
+            <span className="hidden md:inline text-lg lg:text-xl font-bold text-slate-800 dark:text-slate-100 tracking-wider">
               TEKLİF YÖNETİM SİSTEMİ
             </span>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-red-700/40 hover:bg-white hover:shadow-sm transition-all duration-200">
-                <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
-                  <UserIcon className="w-4 h-4" />
-                </div>
-                <span className="text-sm font-medium text-slate-600">Profil</span>
-              </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              aria-label="Tema değiştir"
+              className="relative inline-flex items-center h-9 w-16 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 transition-colors hover:border-red-700/40"
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 h-8 w-8 rounded-full bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center transition-transform duration-300 ${
+                  theme === "dark" ? "translate-x-7" : "translate-x-0"
+                }`}
+              >
+                {theme === "dark" ? (
+                  <Moon className="w-4 h-4 text-amber-300" />
+                ) : (
+                  <Sun className="w-4 h-4 text-amber-500" />
+                )}
+              </span>
+              <Sun className={`absolute left-2 w-4 h-4 ${theme === "light" ? "opacity-0" : "text-slate-400"}`} />
+              <Moon className={`absolute right-2 w-4 h-4 ${theme === "dark" ? "opacity-0" : "text-slate-400"}`} />
+            </button>
 
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60 animate-scale-in">
-              <DropdownMenuLabel>Profil seç</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {USERS.map((name) => (
-                <DropdownMenuItem
-                  key={name}
-                  onClick={() => setCurrentUser(name)}
-                  className="cursor-pointer"
-                >
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-[10px] mr-2">
-                    {name.split(" ").map((n) => n[0]).join("")}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-red-700/40 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm transition-all duration-200">
+                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center">
+                    <UserIcon className="w-4 h-4" />
                   </div>
-                  {name}
-                </DropdownMenuItem>
-              ))}
-              {currentUser && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setCurrentUser(null)} className="cursor-pointer">
-                    Profili temizle
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Profil</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-60 animate-scale-in">
+                <DropdownMenuLabel>Profil seç</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {USERS.map((name) => (
+                  <DropdownMenuItem
+                    key={name}
+                    onClick={() => setCurrentUser(name)}
+                    className="cursor-pointer"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center font-bold text-[10px] mr-2">
+                      {name.split(" ").map((n) => n[0]).join("")}
+                    </div>
+                    {name}
                   </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                ))}
+                {currentUser && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setCurrentUser(null)} className="cursor-pointer">
+                      Profili temizle
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
       {/* Hero */}
-      <div className="relative overflow-hidden border-b border-slate-200 bg-white animate-fade-in">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 animate-fade-in">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-700 via-red-600 to-slate-900" />
         <div className="absolute -top-32 -right-32 w-96 h-96 bg-red-100/40 rounded-full blur-3xl pointer-events-none" />
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
-                <span className="text-red-700">Teklif Yönetim</span> Paneli
-              </h1>
-              <p className="text-sm text-slate-500 mt-2">
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
                 Tüm tekliflerin genel görünümü. Yeni teklif oluşturun veya mevcutları yönetin.
               </p>
             </div>
@@ -323,12 +345,12 @@ export default function HomePage() {
       {/* Proposals */}
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Teklifler</h2>
-          <span className="text-sm text-slate-500">{visibleProposals.length} sonuç</span>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Teklifler</h2>
+          <span className="text-sm text-slate-500 dark:text-slate-400">{visibleProposals.length} sonuç</span>
         </div>
 
         {/* Filters */}
-        <Card className="p-4 mb-5 border border-slate-200 bg-white">
+        <Card className="p-4 mb-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
             <div className="md:col-span-5 relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -481,14 +503,14 @@ function StatCard({
   delay?: number;
 }) {
   const tones: Record<string, string> = {
-    slate: "bg-slate-100 text-slate-700",
-    green: "bg-green-100 text-green-700",
-    amber: "bg-amber-100 text-amber-700",
-    red: "bg-red-100 text-red-700",
+    slate: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200",
+    green: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
+    amber: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
+    red: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
   };
   return (
     <Card
-      className="p-5 border border-slate-200 bg-white animate-fade-in hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+      className="p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 animate-fade-in hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
       style={{ animationDelay: `${delay}ms`, animationFillMode: "backwards" }}
     >
       <div className="flex items-center gap-3">
@@ -496,8 +518,8 @@ function StatCard({
           {icon}
         </div>
         <div className="min-w-0">
-          <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</div>
-          <div className="text-2xl font-bold text-slate-900 tabular-nums truncate">{value}</div>
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{label}</div>
+          <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums truncate">{value}</div>
         </div>
       </div>
     </Card>
