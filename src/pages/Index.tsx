@@ -313,10 +313,7 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
-                <span className="text-red-700">Teklif Yönetim</span> Paneli
-              </h1>
-              <p className="text-sm text-slate-500 mt-2">
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
                 Tüm tekliflerin genel görünümü. Yeni teklif oluşturun veya mevcutları yönetin.
               </p>
             </div>
