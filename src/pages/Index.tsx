@@ -345,12 +345,12 @@ export default function HomePage() {
       {/* Proposals */}
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Teklifler</h2>
-          <span className="text-sm text-slate-500">{visibleProposals.length} sonuç</span>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Teklifler</h2>
+          <span className="text-sm text-slate-500 dark:text-slate-400">{visibleProposals.length} sonuç</span>
         </div>
 
         {/* Filters */}
-        <Card className="p-4 mb-5 border border-slate-200 bg-white">
+        <Card className="p-4 mb-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
             <div className="md:col-span-5 relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
