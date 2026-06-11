@@ -40,6 +40,7 @@ import type { Proposal } from "@/types/proposal";
 import { USERS } from "@/types/proposal";
 import { useToast } from "@/hooks/use-toast";
 import { useCurrentUser, setCurrentUser } from "@/hooks/useCurrentUser";
+import { useTheme } from "@/hooks/useTheme";
 import avasyaLogo from "@/assets/avasya-logo.png";
 
 export default function HomePage() {
