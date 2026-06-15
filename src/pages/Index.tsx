@@ -86,6 +86,12 @@ export default function HomePage() {
     fetchProposals();
   }, []);
 
+  // When a profile is selected, auto-filter to that user's proposals.
+  // Selecting "Profili temizle" (currentUser = null) resets to all.
+  useEffect(() => {
+    setUserFilter(currentUser ? currentUser : "all");
+  }, [currentUser]);
+
   const handleNewProposal = () => {
     setEditingProposal(null);
     setIsEditing(true);
@@ -230,9 +236,9 @@ export default function HomePage() {
   const initials = currentUser ? currentUser.split(" ").map((n) => n[0]).join("") : "";
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors">
+    <div className="min-h-screen bg-white dark:bg-neutral-950 transition-colors">
       {/* Top bar */}
-      <header className="sticky top-0 z-20 backdrop-blur bg-white/85 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800">
+      <header className="sticky top-0 z-20 backdrop-blur bg-white/85 dark:bg-neutral-900/80 border-b border-slate-200 dark:border-neutral-800">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 h-24 flex items-center justify-between">
           <div className="flex items-center gap-4 group">
             <img
@@ -241,7 +247,7 @@ export default function HomePage() {
               className="h-14 md:h-16 w-auto transition-transform duration-300 group-hover:scale-105"
               draggable={false}
             />
-            <div className="hidden md:block h-10 w-px bg-slate-200 dark:bg-slate-700" />
+            <div className="hidden md:block h-10 w-px bg-slate-200 dark:bg-neutral-800" />
             <span className="hidden md:inline text-lg lg:text-xl font-bold text-slate-800 dark:text-slate-100 tracking-wider">
               TEKLİF YÖNETİM SİSTEMİ
             </span>
@@ -251,10 +257,10 @@ export default function HomePage() {
             <button
               onClick={toggleTheme}
               aria-label="Tema değiştir"
-              className="relative inline-flex items-center h-9 w-16 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 transition-colors hover:border-red-700/40"
+              className="relative inline-flex items-center h-9 w-16 rounded-full border border-slate-200 dark:border-neutral-700 bg-slate-100 dark:bg-neutral-800 transition-colors hover:border-red-700/40"
             >
               <span
-                className={`absolute top-0.5 left-0.5 h-8 w-8 rounded-full bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center transition-transform duration-300 ${
+                className={`absolute top-0.5 left-0.5 h-8 w-8 rounded-full bg-white dark:bg-neutral-900 shadow-sm flex items-center justify-center transition-transform duration-300 ${
                   theme === "dark" ? "translate-x-7" : "translate-x-0"
                 }`}
               >
@@ -270,8 +276,8 @@ export default function HomePage() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-red-700/40 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm transition-all duration-200">
-                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center">
+                <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 hover:border-red-700/40 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm transition-all duration-200">
+                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-neutral-800 text-slate-600 dark:text-slate-300 flex items-center justify-center">
                     <UserIcon className="w-4 h-4" />
                   </div>
                   <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Profil</span>
@@ -307,7 +313,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 animate-fade-in">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 animate-fade-in">
         <div className="absolute top-0 left-0 right-0 h-1 bg-red-700 dark:bg-red-600" />
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
@@ -349,7 +355,7 @@ export default function HomePage() {
         </div>
 
         {/* Filters */}
-        <Card className="p-4 mb-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <Card className="p-4 mb-5 border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
             <div className="md:col-span-5 relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -502,14 +508,14 @@ function StatCard({
   delay?: number;
 }) {
   const tones: Record<string, string> = {
-    slate: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200",
+    slate: "bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-slate-200",
     green: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
     amber: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
     red: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
   };
   return (
     <Card
-      className="p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 animate-fade-in hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+      className="p-5 border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 animate-fade-in hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
       style={{ animationDelay: `${delay}ms`, animationFillMode: "backwards" }}
     >
       <div className="flex items-center gap-3">
