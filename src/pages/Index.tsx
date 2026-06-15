@@ -88,7 +88,13 @@ export default function HomePage() {
 
   // When a profile is selected, auto-filter to that user's proposals.
   // Selecting "Profili temizle" (currentUser = null) resets to all.
+  // Skip the initial mount so the page always starts with "all" users.
+  const hasMountedUser = useRef(false);
   useEffect(() => {
+    if (!hasMountedUser.current) {
+      hasMountedUser.current = true;
+      return;
+    }
     setUserFilter(currentUser ? currentUser : "all");
   }, [currentUser]);
 
