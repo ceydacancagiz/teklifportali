@@ -86,6 +86,12 @@ export default function HomePage() {
     fetchProposals();
   }, []);
 
+  // When a profile is selected, auto-filter to that user's proposals.
+  // Selecting "Profili temizle" (currentUser = null) resets to all.
+  useEffect(() => {
+    setUserFilter(currentUser ? currentUser : "all");
+  }, [currentUser]);
+
   const handleNewProposal = () => {
     setEditingProposal(null);
     setIsEditing(true);
