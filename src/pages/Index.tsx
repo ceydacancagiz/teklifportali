@@ -312,6 +312,17 @@ export default function HomePage() {
                     </DropdownMenuItem>
                   </>
                 )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    setCurrentUser(null);
+                    window.location.href = "/auth";
+                  }}
+                  className="cursor-pointer text-red-600 focus:text-red-700"
+                >
+                  Çıkış Yap
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
