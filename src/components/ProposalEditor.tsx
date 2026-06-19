@@ -120,6 +120,40 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
     updateLineItem(itemId, "kitList", []);
   };
 
+  const addKitListRow = (itemId: string) => {
+    const item = data.lineItems.find((i) => i.id === itemId);
+    if (!item) return;
+    const newRow: KitListItem = {
+      module: "",
+      description: "",
+      sku: "",
+      taxType: "",
+      quantity: 1,
+    };
+    updateLineItem(itemId, "kitList", [...item.kitList, newRow]);
+  };
+
+  const updateKitListRow = (
+    itemId: string,
+    rowIndex: number,
+    field: keyof KitListItem,
+    value: any
+  ) => {
+    const item = data.lineItems.find((i) => i.id === itemId);
+    if (!item) return;
+    const updated = item.kitList.map((row, idx) =>
+      idx === rowIndex ? { ...row, [field]: value } : row
+    );
+    updateLineItem(itemId, "kitList", updated);
+  };
+
+  const removeKitListRow = (itemId: string, rowIndex: number) => {
+    const item = data.lineItems.find((i) => i.id === itemId);
+    if (!item) return;
+    const updated = item.kitList.filter((_, idx) => idx !== rowIndex);
+    updateLineItem(itemId, "kitList", updated);
+  };
+
   const calculateTotal = () => {
     return data.lineItems.reduce(
       (sum, item) => sum + item.quantity * item.unitPrice,
