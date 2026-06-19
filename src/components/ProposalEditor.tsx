@@ -120,6 +120,40 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
     updateLineItem(itemId, "kitList", []);
   };
 
+  const addKitListRow = (itemId: string) => {
+    const item = data.lineItems.find((i) => i.id === itemId);
+    if (!item) return;
+    const newRow: KitListItem = {
+      module: "",
+      description: "",
+      sku: "",
+      taxType: "",
+      quantity: 1,
+    };
+    updateLineItem(itemId, "kitList", [...item.kitList, newRow]);
+  };
+
+  const updateKitListRow = (
+    itemId: string,
+    rowIndex: number,
+    field: keyof KitListItem,
+    value: any
+  ) => {
+    const item = data.lineItems.find((i) => i.id === itemId);
+    if (!item) return;
+    const updated = item.kitList.map((row, idx) =>
+      idx === rowIndex ? { ...row, [field]: value } : row
+    );
+    updateLineItem(itemId, "kitList", updated);
+  };
+
+  const removeKitListRow = (itemId: string, rowIndex: number) => {
+    const item = data.lineItems.find((i) => i.id === itemId);
+    if (!item) return;
+    const updated = item.kitList.filter((_, idx) => idx !== rowIndex);
+    updateLineItem(itemId, "kitList", updated);
+  };
+
   const calculateTotal = () => {
     return data.lineItems.reduce(
       (sum, item) => sum + item.quantity * item.unitPrice,
@@ -421,6 +455,15 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
                   onPaste={(e) => handleKitListPaste(item.id, e)}
                   className="mb-2 min-h-[60px]"
                 />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => addKitListRow(item.id)}
+                  className="mb-2 h-7 text-xs"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Satır Ekle
+                </Button>
 
                 {/* Kit list preview table */}
                 {item.kitList.length > 0 && (
@@ -430,33 +473,81 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
                         <tr className="bg-muted">
                           <th className="text-left p-2 font-medium">Modül</th>
                           <th className="text-left p-2 font-medium">Açıklama</th>
-                          {data.showSkuColumn && (
-                            <th className="text-left p-2 font-medium">SKU</th>
-                          )}
-                          {data.showTaxColumn && (
-                            <th className="text-left p-2 font-medium">Vergi Türü</th>
-                          )}
-                          <th className="text-center p-2 font-medium">Adet</th>
+                          <th className="text-center p-2 font-medium w-16">Adet</th>
+                          <th className="text-center p-2 font-medium w-8"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {item.kitList.map((kitItem, kitIndex) => (
                           <tr key={kitIndex} className="border-t">
-                            <td className="p-2 font-medium">{kitItem.module}</td>
-                            <td className="p-2 text-muted-foreground">{kitItem.description}</td>
-                            {data.showSkuColumn && (
-                              <td className="p-2 text-muted-foreground">{kitItem.sku || "-"}</td>
-                            )}
-                            {data.showTaxColumn && (
-                              <td className="p-2 text-muted-foreground">{kitItem.taxType || "-"}</td>
-                            )}
-                            <td className="p-2 text-center">{kitItem.quantity}</td>
+                            <td className="p-1">
+                              <Input
+                                value={kitItem.module}
+                                onChange={(e) =>
+                                  updateKitListRow(
+                                    item.id,
+                                    kitIndex,
+                                    "module",
+                                    e.target.value
+                                  )
+                                }
+                                className="h-6 text-xs px-1 py-0"
+                              />
+                            </td>
+                            <td className="p-1">
+                              <Input
+                                value={kitItem.description}
+                                onChange={(e) =>
+                                  updateKitListRow(
+                                    item.id,
+                                    kitIndex,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
+                                className="h-6 text-xs px-1 py-0"
+                              />
+                            </td>
+                            <td className="p-1">
+                              <Input
+                                type="number"
+                                value={kitItem.quantity}
+                                onChange={(e) =>
+                                  updateKitListRow(
+                                    item.id,
+                                    kitIndex,
+                                    "quantity",
+                                    parseInt(e.target.value) || 0
+                                  )
+                                }
+                                className="h-6 text-xs px-1 py-0 text-center"
+                              />
+                            </td>
+                            <td className="p-1 text-center">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeKitListRow(item.id, kitIndex)}
+                                className="h-5 w-5 text-muted-foreground hover:text-destructive"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
-                    <div className="bg-muted px-2 py-1 text-xs text-muted-foreground">
-                      Toplam {item.kitList.length} kalem
+                    <div className="bg-muted px-2 py-1 text-xs text-muted-foreground flex items-center justify-between">
+                      <span>Toplam {item.kitList.length} kalem</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => addKitListRow(item.id)}
+                        className="h-5 text-xs px-2 py-0"
+                      >
+                        <Plus className="w-3 h-3 mr-1" />
+                        Satır Ekle
+                      </Button>
                     </div>
                   </div>
                 )}
