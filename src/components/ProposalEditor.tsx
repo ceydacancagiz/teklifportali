@@ -455,6 +455,15 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
                   onPaste={(e) => handleKitListPaste(item.id, e)}
                   className="mb-2 min-h-[60px]"
                 />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => addKitListRow(item.id)}
+                  className="mb-2 h-7 text-xs"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Satır Ekle
+                </Button>
 
                 {/* Kit list preview table */}
                 {item.kitList.length > 0 && (
