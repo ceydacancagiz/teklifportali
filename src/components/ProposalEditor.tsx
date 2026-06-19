@@ -102,58 +102,14 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
     const pastedText = e.clipboardData.getData("text");
     const rows = pastedText.split("\n").filter((row) => row.trim());
 
+    // Sadece ilk 3 sütun esas alınır: Modül | Açıklama | Adet
     const parsedItems: KitListItem[] = rows.map((row) => {
       const columns = row.split("\t");
-
-      // Smart parsing: detect if data has many columns (Excel with merged cells)
-      // Excel format from Dell/similar configs: B(Modül) | C-J(Açıklama merged) | K(SKU) | L(Vergi Türü) | M(empty) | N(Adet)
-      // When copied, merged cells produce empty tab columns
-      if (columns.length > 6) {
-        // Many columns - likely Excel with merged cells
-        // Find the description (first non-empty after module)
-        const module = columns[0]?.trim() || "";
-        const description = columns[1]?.trim() || "";
-        
-        // SKU and tax type are near the end, before quantity
-        // Look for non-empty columns from the right
-        const nonEmptyFromRight: string[] = [];
-        for (let i = columns.length - 1; i >= 2; i--) {
-          const val = columns[i]?.trim();
-          if (val) nonEmptyFromRight.unshift(val);
-        }
-        
-        // Pattern: [...other, SKU, TaxType, Quantity] or [...other, Quantity]
-        // The last non-empty value that's a number is quantity
-        let quantity = 1;
-        let sku = "";
-        let taxType = "";
-
-        if (nonEmptyFromRight.length >= 3) {
-          const lastVal = nonEmptyFromRight[nonEmptyFromRight.length - 1];
-          if (!isNaN(parseInt(lastVal))) {
-            quantity = parseInt(lastVal);
-            taxType = nonEmptyFromRight[nonEmptyFromRight.length - 2] || "";
-            sku = nonEmptyFromRight[nonEmptyFromRight.length - 3] || "";
-          }
-        } else if (nonEmptyFromRight.length >= 1) {
-          const lastVal = nonEmptyFromRight[nonEmptyFromRight.length - 1];
-          if (!isNaN(parseInt(lastVal))) {
-            quantity = parseInt(lastVal);
-          }
-        }
-
-        return { module, description, sku, taxType, quantity };
-      }
-
-      // Simple 5-column format: Module | Description | SKU | Tax Type | Quantity
-      return {
-        module: columns[0]?.trim() || "",
-        description: columns[1]?.trim() || "",
-        sku: columns[2]?.trim() || "",
-        taxType: columns[3]?.trim() || "",
-        quantity: parseInt(columns[4]?.trim()) || 1,
-      };
-    }).filter((item) => item.module || item.description || item.sku);
+      const module = columns[0]?.trim() || "";
+      const description = columns[1]?.trim() || "";
+      const quantity = parseInt(columns[2]?.trim()) || 1;
+      return { module, description, sku: "", taxType: "", quantity };
+    }).filter((item) => item.module || item.description);
 
     if (parsedItems.length > 0) {
       updateLineItem(itemId, "kitList", parsedItems);
