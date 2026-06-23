@@ -102,14 +102,58 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
     const pastedText = e.clipboardData.getData("text");
     const rows = pastedText.split("\n").filter((row) => row.trim());
 
-    // Sadece ilk 3 sütun esas alınır: Modül | Açıklama | Adet
     const parsedItems: KitListItem[] = rows.map((row) => {
       const columns = row.split("\t");
-      const module = columns[0]?.trim() || "";
-      const description = columns[1]?.trim() || "";
-      const quantity = parseInt(columns[2]?.trim()) || 1;
-      return { module, description, sku: "", taxType: "", quantity };
-    }).filter((item) => item.module || item.description);
+
+      // Smart parsing: detect if data has many columns (Excel with merged cells)
+      // Excel format from Dell/similar configs: B(Modül) | C-J(Açıklama merged) | K(SKU) | L(Vergi Türü) | M(empty) | N(Adet)
+      // When copied, merged cells produce empty tab columns
+      if (columns.length > 6) {
+        // Many columns - likely Excel with merged cells
+        // Find the description (first non-empty after module)
+        const module = columns[0]?.trim() || "";
+        const description = columns[1]?.trim() || "";
+        
+        // SKU and tax type are near the end, before quantity
+        // Look for non-empty columns from the right
+        const nonEmptyFromRight: string[] = [];
+        for (let i = columns.length - 1; i >= 2; i--) {
+          const val = columns[i]?.trim();
+          if (val) nonEmptyFromRight.unshift(val);
+        }
+        
+        // Pattern: [...other, SKU, TaxType, Quantity] or [...other, Quantity]
+        // The last non-empty value that's a number is quantity
+        let quantity = 1;
+        let sku = "";
+        let taxType = "";
+
+        if (nonEmptyFromRight.length >= 3) {
+          const lastVal = nonEmptyFromRight[nonEmptyFromRight.length - 1];
+          if (!isNaN(parseInt(lastVal))) {
+            quantity = parseInt(lastVal);
+            taxType = nonEmptyFromRight[nonEmptyFromRight.length - 2] || "";
+            sku = nonEmptyFromRight[nonEmptyFromRight.length - 3] || "";
+          }
+        } else if (nonEmptyFromRight.length >= 1) {
+          const lastVal = nonEmptyFromRight[nonEmptyFromRight.length - 1];
+          if (!isNaN(parseInt(lastVal))) {
+            quantity = parseInt(lastVal);
+          }
+        }
+
+        return { module, description, sku, taxType, quantity };
+      }
+
+      // Simple 5-column format: Module | Description | SKU | Tax Type | Quantity
+      return {
+        module: columns[0]?.trim() || "",
+        description: columns[1]?.trim() || "",
+        sku: columns[2]?.trim() || "",
+        taxType: columns[3]?.trim() || "",
+        quantity: parseInt(columns[4]?.trim()) || 1,
+      };
+    }).filter((item) => item.module || item.description || item.sku);
 
     if (parsedItems.length > 0) {
       updateLineItem(itemId, "kitList", parsedItems);
@@ -118,40 +162,6 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
 
   const clearKitList = (itemId: string) => {
     updateLineItem(itemId, "kitList", []);
-  };
-
-  const addKitListRow = (itemId: string) => {
-    const item = data.lineItems.find((i) => i.id === itemId);
-    if (!item) return;
-    const newRow: KitListItem = {
-      module: "",
-      description: "",
-      sku: "",
-      taxType: "",
-      quantity: 1,
-    };
-    updateLineItem(itemId, "kitList", [...item.kitList, newRow]);
-  };
-
-  const updateKitListRow = (
-    itemId: string,
-    rowIndex: number,
-    field: keyof KitListItem,
-    value: any
-  ) => {
-    const item = data.lineItems.find((i) => i.id === itemId);
-    if (!item) return;
-    const updated = item.kitList.map((row, idx) =>
-      idx === rowIndex ? { ...row, [field]: value } : row
-    );
-    updateLineItem(itemId, "kitList", updated);
-  };
-
-  const removeKitListRow = (itemId: string, rowIndex: number) => {
-    const item = data.lineItems.find((i) => i.id === itemId);
-    if (!item) return;
-    const updated = item.kitList.filter((_, idx) => idx !== rowIndex);
-    updateLineItem(itemId, "kitList", updated);
   };
 
   const calculateTotal = () => {
@@ -455,15 +465,6 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
                   onPaste={(e) => handleKitListPaste(item.id, e)}
                   className="mb-2 min-h-[60px]"
                 />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => addKitListRow(item.id)}
-                  className="mb-2 h-7 text-xs"
-                >
-                  <Plus className="w-3 h-3 mr-1" />
-                  Satır Ekle
-                </Button>
 
                 {/* Kit list preview table */}
                 {item.kitList.length > 0 && (
@@ -473,81 +474,33 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
                         <tr className="bg-muted">
                           <th className="text-left p-2 font-medium">Modül</th>
                           <th className="text-left p-2 font-medium">Açıklama</th>
-                          <th className="text-center p-2 font-medium w-16">Adet</th>
-                          <th className="text-center p-2 font-medium w-8"></th>
+                          {data.showSkuColumn && (
+                            <th className="text-left p-2 font-medium">SKU</th>
+                          )}
+                          {data.showTaxColumn && (
+                            <th className="text-left p-2 font-medium">Vergi Türü</th>
+                          )}
+                          <th className="text-center p-2 font-medium">Adet</th>
                         </tr>
                       </thead>
                       <tbody>
                         {item.kitList.map((kitItem, kitIndex) => (
                           <tr key={kitIndex} className="border-t">
-                            <td className="p-1">
-                              <Input
-                                value={kitItem.module}
-                                onChange={(e) =>
-                                  updateKitListRow(
-                                    item.id,
-                                    kitIndex,
-                                    "module",
-                                    e.target.value
-                                  )
-                                }
-                                className="h-6 text-xs px-1 py-0"
-                              />
-                            </td>
-                            <td className="p-1">
-                              <Input
-                                value={kitItem.description}
-                                onChange={(e) =>
-                                  updateKitListRow(
-                                    item.id,
-                                    kitIndex,
-                                    "description",
-                                    e.target.value
-                                  )
-                                }
-                                className="h-6 text-xs px-1 py-0"
-                              />
-                            </td>
-                            <td className="p-1">
-                              <Input
-                                type="number"
-                                value={kitItem.quantity}
-                                onChange={(e) =>
-                                  updateKitListRow(
-                                    item.id,
-                                    kitIndex,
-                                    "quantity",
-                                    parseInt(e.target.value) || 0
-                                  )
-                                }
-                                className="h-6 text-xs px-1 py-0 text-center"
-                              />
-                            </td>
-                            <td className="p-1 text-center">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => removeKitListRow(item.id, kitIndex)}
-                                className="h-5 w-5 text-muted-foreground hover:text-destructive"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </td>
+                            <td className="p-2 font-medium">{kitItem.module}</td>
+                            <td className="p-2 text-muted-foreground">{kitItem.description}</td>
+                            {data.showSkuColumn && (
+                              <td className="p-2 text-muted-foreground">{kitItem.sku || "-"}</td>
+                            )}
+                            {data.showTaxColumn && (
+                              <td className="p-2 text-muted-foreground">{kitItem.taxType || "-"}</td>
+                            )}
+                            <td className="p-2 text-center">{kitItem.quantity}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
-                    <div className="bg-muted px-2 py-1 text-xs text-muted-foreground flex items-center justify-between">
-                      <span>Toplam {item.kitList.length} kalem</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => addKitListRow(item.id)}
-                        className="h-5 text-xs px-2 py-0"
-                      >
-                        <Plus className="w-3 h-3 mr-1" />
-                        Satır Ekle
-                      </Button>
+                    <div className="bg-muted px-2 py-1 text-xs text-muted-foreground">
+                      Toplam {item.kitList.length} kalem
                     </div>
                   </div>
                 )}
