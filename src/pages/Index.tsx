@@ -321,6 +321,26 @@ export default function HomePage() {
                     </DropdownMenuItem>
                   </>
                 )}
+                {notificationsSupported() && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={async () => {
+                        const ok = await requestNotificationPermission();
+                        if (!ok) {
+                          toast({
+                            title: "Bildirimler açılamadı",
+                            description: "Tarayıcı ayarlarından bu site için bildirimlere izin verin.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="cursor-pointer"
+                    >
+                      Masaüstü bildirimlerini aç
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={async () => {
