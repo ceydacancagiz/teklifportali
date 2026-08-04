@@ -12,6 +12,7 @@ import {
   User as UserIcon,
   Sun,
   Moon,
+  Trash2,
 }  from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -176,6 +177,43 @@ export default function HomePage() {
       `${p.customerName} teklifi ${newStatus === "approved" ? "onaylandı" : "taslağa alındı"}.`,
     );
   };
+
+  const [deleteTarget, setDeleteTarget] = useState<Proposal | null>(null);
+
+  const askDelete = (e: React.MouseEvent, p: Proposal) => {
+    e.stopPropagation();
+    if (p.createdBy && currentUser && p.createdBy !== currentUser) {
+      toast({
+        title: "Silme yetkisi yok",
+        description: `Bu teklifi yalnızca ${p.createdBy} silebilir.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    if (p.createdBy && !currentUser) {
+      toast({
+        title: "Profil seçin",
+        description: "Silmek için sağ üstten kendi profilinizi seçin.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setDeleteTarget(p);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { error } = await supabase.from("proposals").delete().eq("id", deleteTarget.id);
+    if (error) {
+      toast({ title: "Hata", description: "Teklif silinemedi.", variant: "destructive" });
+      return;
+    }
+    setProposals((prev) => prev.filter((x) => x.id !== deleteTarget.id));
+    toast({ title: "Teklif silindi", description: `${deleteTarget.customerName || "Teklif"} kaldırıldı.` });
+    setDeleteTarget(null);
+  };
+
+
 
   const visibleProposals = useMemo(() => {
     return proposals.filter((p) => {
