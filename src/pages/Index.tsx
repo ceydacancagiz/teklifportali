@@ -567,6 +567,15 @@ export default function HomePage() {
                       <Check className="w-4 h-4 mr-1" />
                       {proposal.status === "approved" ? "Onaylı" : "Onayla"}
                     </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => askDelete(e, proposal)}
+                      title="Teklifi sil"
+                      className="border-slate-300 text-slate-600 dark:text-slate-200 hover:border-red-600 hover:text-red-700 dark:hover:text-red-400"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               </Card>
@@ -574,6 +583,25 @@ export default function HomePage() {
           </div>
         )}
       </div>
+
+      <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Teklifi sil</DialogTitle>
+            <DialogDescription>
+              {deleteTarget?.customerName || "Bu teklif"} kalıcı olarak silinecek. Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+              Vazgeç
+            </Button>
+            <Button className="bg-red-700 hover:bg-red-800 text-white" onClick={confirmDelete}>
+              Sil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
