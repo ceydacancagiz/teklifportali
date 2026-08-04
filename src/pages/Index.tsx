@@ -171,6 +171,10 @@ export default function HomePage() {
       return;
     }
     setProposals((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus } : x)));
+    notify(
+      newStatus === "approved" ? "Teklif onaylandı" : "Onay kaldırıldı",
+      `${p.customerName} teklifi ${newStatus === "approved" ? "onaylandı" : "taslağa alındı"}.`,
+    );
   };
 
   const visibleProposals = useMemo(() => {
