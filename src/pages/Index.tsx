@@ -140,6 +140,10 @@ export default function HomePage() {
     }
 
     toast({ title: "Başarılı", description: "Teklif kaydedildi." });
+    notify(
+      "Teklif kaydedildi",
+      `${row.customer_name || "Müşteri"} için teklif ${row.created_by || currentUser || ""} tarafından kaydedildi.`.trim(),
+    );
     setIsEditing(false);
     setEditingProposal(null);
     setPendingSave(null);
