@@ -16,6 +16,8 @@ const EMAIL_TO_NAME: Record<string, string> = {
   "ozlem.hur@avasya.com.tr": "Özlem Hür",
   "ulker.ertugrul@avasya.com.tr": "Ülker Ertuğrul",
   "ceyda.cancagiz@avasya.com.tr": "Ceyda Cancağız",
+  "ugur.imre@avasya.com.tr": "Uğur İmre",
+  "sezer.ali@avasya.com.tr": "Sezer Ali",
 };
 
 function nameFromEmail(email: string): string {

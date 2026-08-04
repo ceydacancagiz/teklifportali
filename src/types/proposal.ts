@@ -54,6 +54,8 @@ export const USERS = [
   "Özlem Hür",
   "Ülker Ertuğrul",
   "Ceyda Cancağız",
+  "Uğur İmre",
+  "Sezer Ali",
 ] as const;
 
 export type UserName = (typeof USERS)[number];

@@ -41,6 +41,7 @@ import { USERS } from "@/types/proposal";
 import { useToast } from "@/hooks/use-toast";
 import { useCurrentUser, setCurrentUser } from "@/hooks/useCurrentUser";
 import { useTheme } from "@/hooks/useTheme";
+import { notify, requestNotificationPermission, notificationsSupported } from "@/lib/notifications";
 import avasyaLogo from "@/assets/avasya-logo.png";
 
 export default function HomePage() {
@@ -139,6 +140,10 @@ export default function HomePage() {
     }
 
     toast({ title: "Başarılı", description: "Teklif kaydedildi." });
+    notify(
+      "Teklif kaydedildi",
+      `${row.customer_name || "Müşteri"} için teklif ${row.created_by || currentUser || ""} tarafından kaydedildi.`.trim(),
+    );
     setIsEditing(false);
     setEditingProposal(null);
     setPendingSave(null);
@@ -166,6 +171,10 @@ export default function HomePage() {
       return;
     }
     setProposals((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus } : x)));
+    notify(
+      newStatus === "approved" ? "Teklif onaylandı" : "Onay kaldırıldı",
+      `${p.customerName} teklifi ${newStatus === "approved" ? "onaylandı" : "taslağa alındı"}.`,
+    );
   };
 
   const visibleProposals = useMemo(() => {
@@ -309,6 +318,26 @@ export default function HomePage() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setCurrentUser(null)} className="cursor-pointer">
                       Profili temizle
+                    </DropdownMenuItem>
+                  </>
+                )}
+                {notificationsSupported() && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={async () => {
+                        const ok = await requestNotificationPermission();
+                        if (!ok) {
+                          toast({
+                            title: "Bildirimler açılamadı",
+                            description: "Tarayıcı ayarlarından bu site için bildirimlere izin verin.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="cursor-pointer"
+                    >
+                      Masaüstü bildirimlerini aç
                     </DropdownMenuItem>
                   </>
                 )}
