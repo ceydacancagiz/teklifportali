@@ -12,6 +12,7 @@ import {
   User as UserIcon,
   Sun,
   Moon,
+  Trash2,
 }  from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -176,6 +177,43 @@ export default function HomePage() {
       `${p.customerName} teklifi ${newStatus === "approved" ? "onaylandı" : "taslağa alındı"}.`,
     );
   };
+
+  const [deleteTarget, setDeleteTarget] = useState<Proposal | null>(null);
+
+  const askDelete = (e: React.MouseEvent, p: Proposal) => {
+    e.stopPropagation();
+    if (p.createdBy && currentUser && p.createdBy !== currentUser) {
+      toast({
+        title: "Silme yetkisi yok",
+        description: `Bu teklifi yalnızca ${p.createdBy} silebilir.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    if (p.createdBy && !currentUser) {
+      toast({
+        title: "Profil seçin",
+        description: "Silmek için sağ üstten kendi profilinizi seçin.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setDeleteTarget(p);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { error } = await supabase.from("proposals").delete().eq("id", deleteTarget.id);
+    if (error) {
+      toast({ title: "Hata", description: "Teklif silinemedi.", variant: "destructive" });
+      return;
+    }
+    setProposals((prev) => prev.filter((x) => x.id !== deleteTarget.id));
+    toast({ title: "Teklif silindi", description: `${deleteTarget.customerName || "Teklif"} kaldırıldı.` });
+    setDeleteTarget(null);
+  };
+
+
 
   const visibleProposals = useMemo(() => {
     return proposals.filter((p) => {
@@ -529,6 +567,15 @@ export default function HomePage() {
                       <Check className="w-4 h-4 mr-1" />
                       {proposal.status === "approved" ? "Onaylı" : "Onayla"}
                     </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => askDelete(e, proposal)}
+                      title="Teklifi sil"
+                      className="border-slate-300 text-slate-600 dark:text-slate-200 hover:border-red-600 hover:text-red-700 dark:hover:text-red-400"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               </Card>
@@ -536,6 +583,25 @@ export default function HomePage() {
           </div>
         )}
       </div>
+
+      <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Teklifi sil</DialogTitle>
+            <DialogDescription>
+              {deleteTarget?.customerName || "Bu teklif"} kalıcı olarak silinecek. Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+              Vazgeç
+            </Button>
+            <Button className="bg-red-700 hover:bg-red-800 text-white" onClick={confirmDelete}>
+              Sil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
