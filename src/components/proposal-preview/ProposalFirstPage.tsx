@@ -79,8 +79,9 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                   <td style={{ padding: "10px 4px 0", textAlign: "right" }}>
                     <div style={{
                       display: "block",
-                      border: "2.5px solid hsl(0 75% 42%)",
-                      color: "hsl(0 75% 42%)",
+                      border: "1px solid hsl(0 0% 0%)",
+                      backgroundColor: "hsl(0 0% 94%)",
+                      color: "hsl(0 0% 0%)",
                       fontFamily: "Arial, Helvetica, sans-serif",
                       fontSize: "14px",
                       fontWeight: 700,
@@ -92,7 +93,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       margin: "0 0 0 auto",
                       height: "36px",
                       minHeight: "36px",
-                      width: "120px",
+                      width: "130px",
                       lineHeight: "36px",
                       boxSizing: "border-box",
                     }}>
