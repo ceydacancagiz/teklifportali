@@ -223,8 +223,9 @@ export default function HomePage() {
       if (userFilter !== "all" && p.createdBy !== userFilter) return false;
       if (statusFilter !== "all" && p.status !== statusFilter) return false;
       if (search.trim()) {
-        const q = search.toLowerCase();
-        if (!p.customerName.toLowerCase().includes(q)) return false;
+        const q = search.trim().toLowerCase();
+        const haystack = `${p.customerName} ${p.customerCompany} ${p.proposalNumber}`.toLowerCase();
+        if (!haystack.includes(q)) return false;
       }
       return true;
     });
