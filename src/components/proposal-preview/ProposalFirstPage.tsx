@@ -30,9 +30,11 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
       >
         <div style={{ display: "flex", flexDirection: "column", gap: `${contentGap}px` }}>
           <div style={{ marginBottom: `${customerBottom}px` }}>
-            <div style={{ fontSize: "18px", marginBottom: "6px", fontWeight: 600 }}>Sayın</div>
-            <div style={{ fontSize: "26px", fontWeight: 700, letterSpacing: "0.2px", marginBottom: "12px" }}>
-              {data.customerName || "Müşteri Adı"},
+            <div style={{ fontSize: "20px", fontWeight: 700, letterSpacing: "0.2px", marginBottom: "12px", lineHeight: 1.35 }}>
+              <div>Sayın</div>
+              <div>
+                {[data.customerName, data.customerCompany].filter(Boolean).join(" / ") || "Müşteri Adı"},
+              </div>
             </div>
             {data.introText && (
               <p style={{ fontSize: "12px", lineHeight: 1.7, fontWeight: 500, whiteSpace: "pre-line", maxWidth: "90%" }}>
