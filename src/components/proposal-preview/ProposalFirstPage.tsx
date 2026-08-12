@@ -33,7 +33,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
             <div style={{ fontSize: "20px", fontWeight: 700, letterSpacing: "0.2px", marginBottom: "12px", lineHeight: 1.35 }}>
               <div>Sayın</div>
               <div>
-                {[data.customerName, data.customerCompany].filter(Boolean).join(" / ") || "Müşteri Adı"},
+                {[data.customerCompany, data.customerName].filter(Boolean).join(" ") || "Müşteri Adı"},
               </div>
             </div>
             {data.introText && (
