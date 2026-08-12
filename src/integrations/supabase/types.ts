@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       proposals: {
         Row: {
+          company_name: string | null
           created_at: string
           created_by: string | null
           currency: string | null
@@ -27,11 +28,13 @@ export type Database = {
           items: Json | null
           kit_items: Json | null
           notes: string | null
+          proposal_number: string | null
           status: string
           total: number | null
           updated_at: string
         }
         Insert: {
+          company_name?: string | null
           created_at?: string
           created_by?: string | null
           currency?: string | null
@@ -43,11 +46,13 @@ export type Database = {
           items?: Json | null
           kit_items?: Json | null
           notes?: string | null
+          proposal_number?: string | null
           status?: string
           total?: number | null
           updated_at?: string
         }
         Update: {
+          company_name?: string | null
           created_at?: string
           created_by?: string | null
           currency?: string | null
@@ -59,6 +64,7 @@ export type Database = {
           items?: Json | null
           kit_items?: Json | null
           notes?: string | null
+          proposal_number?: string | null
           status?: string
           total?: number | null
           updated_at?: string
@@ -70,7 +76,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_proposal_number: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
