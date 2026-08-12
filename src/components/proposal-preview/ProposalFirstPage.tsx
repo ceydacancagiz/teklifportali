@@ -123,7 +123,6 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
 
           {(data.contactName || data.contactTitle || data.contactPhone || data.contactEmail) && (
             <div style={{ alignSelf: "flex-end", marginLeft: "auto" }}>
-              <h3 style={{ fontWeight: 700, fontSize: "14px", marginBottom: "6px" }}>ŞİRKET YETKİLİ BİLGİLERİ</h3>
               <hr style={{ borderColor: "hsl(0 0% 65%)", marginBottom: "10px" }} />
               {data.contactName && <p style={{ fontSize: "12px", fontWeight: 700, marginBottom: "4px" }}>{data.contactName}</p>}
               {data.contactTitle && <p style={{ fontSize: "12px", fontStyle: "italic", marginBottom: "4px" }}>{data.contactTitle}</p>}
