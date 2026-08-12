@@ -293,6 +293,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
             {data.proposalNumber && (
               <p className="text-xs text-muted-foreground">Teklif No: <span className="font-semibold">{data.proposalNumber}</span></p>
             )}
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Belge Tarihi</Label>
                 <Input
