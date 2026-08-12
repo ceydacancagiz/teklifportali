@@ -116,6 +116,7 @@ export default function HomePage() {
   const persistProposal = async (proposal: any, createdByName?: string) => {
     const row: any = {
       customer_name: proposal.customerName || "",
+      company_name: proposal.customerCompany || "",
       date: proposal.date || "",
       currency: proposal.currency || "USD",
       total: proposal.total || 0,
