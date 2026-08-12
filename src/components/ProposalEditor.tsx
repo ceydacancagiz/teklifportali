@@ -25,6 +25,8 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
 
   const [data, setData] = useState<ProposalData>({
     customerName: proposal?.customerName || "",
+    customerCompany: proposal?.customerCompany || "",
+    proposalNumber: proposal?.proposalNumber || "",
     date: proposal?.date || new Date().toLocaleDateString("tr-TR"),
     currency: proposal?.currency || "USD",
     lineItems: proposal?.lineItems || [
