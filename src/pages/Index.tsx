@@ -62,7 +62,7 @@ export default function HomePage() {
   const fetchProposals = async () => {
     const { data, error } = await supabase
       .from("proposals")
-      .select("id, customer_name, date, total, currency, status, created_by")
+      .select("id, customer_name, company_name, proposal_number, date, total, currency, status, created_by")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -73,6 +73,8 @@ export default function HomePage() {
         (data || []).map((row: any) => ({
           id: row.id,
           customerName: row.customer_name || "",
+          customerCompany: row.company_name || "",
+          proposalNumber: row.proposal_number || "",
           date: row.date || "",
           total: row.total || 0,
           currency: row.currency || "USD",
@@ -114,6 +116,7 @@ export default function HomePage() {
   const persistProposal = async (proposal: any, createdByName?: string) => {
     const row: any = {
       customer_name: proposal.customerName || "",
+      company_name: proposal.customerCompany || "",
       date: proposal.date || "",
       currency: proposal.currency || "USD",
       total: proposal.total || 0,
@@ -220,8 +223,9 @@ export default function HomePage() {
       if (userFilter !== "all" && p.createdBy !== userFilter) return false;
       if (statusFilter !== "all" && p.status !== statusFilter) return false;
       if (search.trim()) {
-        const q = search.toLowerCase();
-        if (!p.customerName.toLowerCase().includes(q)) return false;
+        const q = search.trim().toLowerCase();
+        const haystack = `${p.customerName} ${p.customerCompany} ${p.proposalNumber}`.toLowerCase();
+        if (!haystack.includes(q)) return false;
       }
       return true;
     });
@@ -444,7 +448,7 @@ export default function HomePage() {
             <div className="md:col-span-5 relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <Input
-                placeholder="Müşteri adı ile ara..."
+                placeholder="Teklif no, müşteri veya firma adı ile ara..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -506,11 +510,18 @@ export default function HomePage() {
                 onClick={async () => {
                   const { data } = await supabase.from("proposals").select("*").eq("id", proposal.id).single();
                   if (data?.full_data) {
-                    setEditingProposal({ ...(data.full_data as any), id: data.id });
+                    setEditingProposal({
+                      ...(data.full_data as any),
+                      id: data.id,
+                      proposalNumber: (data as any).proposal_number || "",
+                      customerCompany: (data.full_data as any)?.customerCompany ?? (data as any).company_name ?? "",
+                    });
                   } else {
                     setEditingProposal({
                       id: data?.id,
                       customerName: data?.customer_name,
+                      customerCompany: (data as any)?.company_name || "",
+                      proposalNumber: (data as any)?.proposal_number || "",
                       date: data?.date,
                       currency: data?.currency,
                     });
@@ -526,8 +537,13 @@ export default function HomePage() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h4 className="font-semibold text-slate-900 truncate group-hover:text-red-700 transition-colors">
-                          {proposal.customerName || "İsimsiz Müşteri"}
+                          {[proposal.customerName, proposal.customerCompany].filter(Boolean).join(" — ") || "İsimsiz Müşteri"}
                         </h4>
+                        {proposal.proposalNumber && (
+                          <Badge variant="outline" className="font-mono text-[11px] tracking-wide">
+                            #{proposal.proposalNumber}
+                          </Badge>
+                        )}
                         {proposal.status === "approved" && (
                           <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border border-green-200 font-medium">
                             <CheckCircle2 className="w-3 h-3 mr-1" />

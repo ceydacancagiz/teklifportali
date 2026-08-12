@@ -25,6 +25,8 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
 
   const [data, setData] = useState<ProposalData>({
     customerName: proposal?.customerName || "",
+    customerCompany: proposal?.customerCompany || "",
+    proposalNumber: proposal?.proposalNumber || "",
     date: proposal?.date || new Date().toLocaleDateString("tr-TR"),
     currency: proposal?.currency || "USD",
     lineItems: proposal?.lineItems || [
@@ -268,15 +270,29 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Label>Müşteri / Firma Adı</Label>
-              <Input
-                placeholder="Örn: X Teknoloji A.Ş."
-                value={data.customerName}
-                onChange={(e) => updateField("customerName", e.target.value)}
-                className="mt-1"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Müşteri Adı (opsiyonel)</Label>
+                <Input
+                  placeholder="Örn: Ahmet Yılmaz"
+                  value={data.customerName}
+                  onChange={(e) => updateField("customerName", e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Firma Adı (opsiyonel)</Label>
+                <Input
+                  placeholder="Örn: X Teknoloji A.Ş."
+                  value={data.customerCompany}
+                  onChange={(e) => updateField("customerCompany", e.target.value)}
+                  className="mt-1"
+                />
+              </div>
             </div>
+            {data.proposalNumber && (
+              <p className="text-xs text-muted-foreground">Teklif No: <span className="font-semibold">{data.proposalNumber}</span></p>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Belge Tarihi</Label>

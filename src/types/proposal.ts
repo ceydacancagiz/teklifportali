@@ -16,6 +16,8 @@ export interface LineItem {
 
 export interface ProposalData {
   customerName: string;
+  customerCompany: string;
+  proposalNumber?: string;
   date: string;
   currency: string;
   lineItems: LineItem[];
@@ -42,6 +44,8 @@ export interface ProposalData {
 export interface Proposal {
   id: string;
   customerName: string;
+  customerCompany: string;
+  proposalNumber: string;
   date: string;
   total: number;
   currency: string;
