@@ -44,6 +44,8 @@ export interface ProposalData {
 export interface Proposal {
   id: string;
   customerName: string;
+  customerCompany: string;
+  proposalNumber: string;
   date: string;
   total: number;
   currency: string;
