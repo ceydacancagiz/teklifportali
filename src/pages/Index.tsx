@@ -448,7 +448,7 @@ export default function HomePage() {
             <div className="md:col-span-5 relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <Input
-                placeholder="Müşteri adı ile ara..."
+                placeholder="Teklif no, müşteri veya firma adı ile ara..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
