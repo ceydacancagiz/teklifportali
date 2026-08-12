@@ -270,22 +270,22 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Müşteri Adı (opsiyonel)</Label>
-                <Input
-                  placeholder="Örn: Ahmet Yılmaz"
-                  value={data.customerName}
-                  onChange={(e) => updateField("customerName", e.target.value)}
-                  className="mt-1"
-                />
-              </div>
+            <div className="space-y-3">
               <div>
                 <Label>Firma Adı (opsiyonel)</Label>
                 <Input
                   placeholder="Örn: X Teknoloji A.Ş."
                   value={data.customerCompany}
                   onChange={(e) => updateField("customerCompany", e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Müşteri Adı (opsiyonel)</Label>
+                <Input
+                  placeholder="Örn: Ahmet Yılmaz"
+                  value={data.customerName}
+                  onChange={(e) => updateField("customerName", e.target.value)}
                   className="mt-1"
                 />
               </div>

@@ -536,19 +536,34 @@ export default function HomePage() {
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-semibold text-slate-900 truncate group-hover:text-red-700 transition-colors">
-                          {[proposal.customerName, proposal.customerCompany].filter(Boolean).join(" — ") || "İsimsiz Müşteri"}
-                        </h4>
                         {proposal.proposalNumber && (
-                          <Badge variant="outline" className="font-mono text-[11px] tracking-wide">
+                          <span className="font-bold text-slate-900 text-lg tabular-nums tracking-tight">
                             #{proposal.proposalNumber}
-                          </Badge>
+                          </span>
                         )}
                         {proposal.status === "approved" && (
                           <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border border-green-200 font-medium">
                             <CheckCircle2 className="w-3 h-3 mr-1" />
                             Onaylandı
                           </Badge>
+                        )}
+                      </div>
+                      <div className="mt-0.5">
+                        {proposal.customerCompany ? (
+                          <>
+                            <h4 className="font-semibold text-slate-900 truncate group-hover:text-red-700 transition-colors leading-tight">
+                              {proposal.customerCompany}
+                            </h4>
+                            {proposal.customerName && (
+                              <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
+                                {proposal.customerName}
+                              </p>
+                            )}
+                          </>
+                        ) : (
+                          <h4 className="font-semibold text-slate-900 truncate group-hover:text-red-700 transition-colors">
+                            {proposal.customerName || "İsimsiz Müşteri"}
+                          </h4>
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mt-1 flex items-center gap-3 flex-wrap">
