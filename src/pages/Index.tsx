@@ -62,7 +62,7 @@ export default function HomePage() {
   const fetchProposals = async () => {
     const { data, error } = await supabase
       .from("proposals")
-      .select("id, customer_name, date, total, currency, status, created_by")
+      .select("id, customer_name, company_name, proposal_number, date, total, currency, status, created_by")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -73,6 +73,8 @@ export default function HomePage() {
         (data || []).map((row: any) => ({
           id: row.id,
           customerName: row.customer_name || "",
+          customerCompany: row.company_name || "",
+          proposalNumber: row.proposal_number || "",
           date: row.date || "",
           total: row.total || 0,
           currency: row.currency || "USD",
