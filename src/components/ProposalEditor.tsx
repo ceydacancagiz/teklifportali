@@ -741,14 +741,19 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
           </CardContent>
         </Card>
 
-        <Button
-          onClick={handleSave}
-          className="w-full mb-8"
-          size="lg"
+        <div
+          className="sticky bottom-0 z-30 -mx-6 mt-2 border-t border-border bg-background px-6 pt-3"
+          style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
         >
-          <Settings className="w-4 h-4 mr-2" />
-          Sisteme Kaydet
-        </Button>
+          <Button
+            onClick={handleSave}
+            size="lg"
+            className="w-full bg-primary text-primary-foreground border border-primary shadow-md hover:bg-primary/90"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Sisteme Kaydet
+          </Button>
+        </div>
       </div>
 
       {/* Right Panel - Paginated Preview */}
