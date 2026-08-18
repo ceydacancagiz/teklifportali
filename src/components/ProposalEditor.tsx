@@ -742,7 +742,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
         </Card>
 
         <div
-          className="sticky bottom-0 z-30 -mx-6 mt-2 border-t border-border bg-background px-6 pt-3"
+          className="sticky bottom-0 z-30 -mx-4 lg:-mx-6 mt-2 border-t border-border bg-background px-4 lg:px-6 pt-3"
           style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
         >
           <Button
