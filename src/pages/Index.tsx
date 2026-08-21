@@ -126,6 +126,23 @@ export default function HomePage() {
       full_data: proposal,
     };
 
+    // Versioned copies: keep the requested number, bumping the version if taken
+    if (proposal.proposalNumber) {
+      let candidate: string = proposal.proposalNumber;
+      for (let i = 0; i < 20; i++) {
+        const { data: clash } = await supabase
+          .from("proposals")
+          .select("id")
+          .eq("proposal_number", candidate)
+          .maybeSingle();
+        if (!clash || clash.id === proposal.id) break;
+        const m = candidate.match(/^(.*)-v(\d+)$/);
+        candidate = m ? `${m[1]}-v${Number(m[2]) + 1}` : `${candidate}-v2`;
+      }
+      row.proposal_number = candidate;
+    }
+
+
     let error;
     if (proposal.id && !proposal.id.startsWith?.("new-")) {
       const result = await supabase.from("proposals").update(row).eq("id", proposal.id);
