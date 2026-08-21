@@ -231,6 +231,13 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
     proposal?.id && !String(proposal.id).startsWith("new-")
   );
 
+  const nextVersionNumber = (current?: string) => {
+    if (!current) return undefined;
+    const match = current.match(/^(.*)-v(\d+)$/);
+    if (match) return `${match[1]}-v${Number(match[2]) + 1}`;
+    return `${current}-v2`;
+  };
+
   const handleSave = (asCopy = false) => {
     onSave({
       id: asCopy ? undefined : proposal?.id,
@@ -239,9 +246,12 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       total: calculateTotal(),
       currency: data.currency,
       ...data,
-      proposalNumber: asCopy ? undefined : data.proposalNumber,
+      proposalNumber: asCopy
+        ? nextVersionNumber(data.proposalNumber)
+        : data.proposalNumber,
     });
   };
+
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
