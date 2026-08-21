@@ -227,14 +227,15 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = (asCopy = false) => {
     onSave({
-      id: proposal?.id,
+      id: asCopy ? undefined : proposal?.id,
       customerName: data.customerName,
       date: data.date,
       total: calculateTotal(),
       currency: data.currency,
       ...data,
+      proposalNumber: asCopy ? undefined : data.proposalNumber,
     });
   };
 
