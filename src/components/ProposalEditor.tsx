@@ -227,6 +227,10 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
     }
   };
 
+  const isExistingProposal = Boolean(
+    proposal?.id && !String(proposal.id).startsWith("new-")
+  );
+
   const handleSave = (asCopy = false) => {
     onSave({
       id: asCopy ? undefined : proposal?.id,
