@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { ArrowLeft, Download, Plus, Trash2, User, Package, Settings, ClipboardList } from "lucide-react";
+import { ArrowLeft, Download, Plus, Trash2, User, Package, Settings, ClipboardList, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -227,14 +227,19 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
     }
   };
 
-  const handleSave = () => {
+  const isExistingProposal = Boolean(
+    proposal?.id && !String(proposal.id).startsWith("new-")
+  );
+
+  const handleSave = (asCopy = false) => {
     onSave({
-      id: proposal?.id,
+      id: asCopy ? undefined : proposal?.id,
       customerName: data.customerName,
       date: data.date,
       total: calculateTotal(),
       currency: data.currency,
       ...data,
+      proposalNumber: asCopy ? undefined : data.proposalNumber,
     });
   };
 
@@ -745,14 +750,27 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
           className="sticky bottom-0 z-30 -mx-4 lg:-mx-6 mt-2 border-t border-border bg-background px-4 lg:px-6 pt-3"
           style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
         >
-          <Button
-            onClick={handleSave}
-            size="lg"
-            className="w-full bg-primary text-primary-foreground border border-primary shadow-md hover:bg-primary/90"
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            Sisteme Kaydet
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button
+              onClick={() => handleSave(false)}
+              size="lg"
+              className="w-full bg-primary text-primary-foreground border border-primary shadow-md hover:bg-primary/90"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              {isExistingProposal ? "Kaydet" : "Sisteme Kaydet"}
+            </Button>
+            {isExistingProposal && (
+              <Button
+                onClick={() => handleSave(true)}
+                size="lg"
+                variant="outline"
+                className="w-full shadow-md"
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                Bir Kopyasını Kaydet
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
