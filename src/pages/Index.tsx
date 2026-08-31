@@ -358,6 +358,21 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                setRefreshing(true);
+                await fetchProposals();
+                setRefreshing(false);
+                toast({ title: "Güncellendi", description: "Teklifler yenilendi." });
+              }}
+              disabled={refreshing}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Güncelle</span>
+            </Button>
             <button
               onClick={toggleTheme}
               aria-label="Tema değiştir"
