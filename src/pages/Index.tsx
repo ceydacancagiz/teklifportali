@@ -54,6 +54,7 @@ export default function HomePage() {
   const [userFilter, setUserFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
   const [pendingSave, setPendingSave] = useState<any | null>(null);
   const [pendingName, setPendingName] = useState<string>("");
   const { toast } = useToast();
