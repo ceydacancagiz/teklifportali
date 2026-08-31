@@ -13,6 +13,7 @@ import {
   Sun,
   Moon,
   Trash2,
+  RefreshCw,
 }  from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -53,6 +54,7 @@ export default function HomePage() {
   const [userFilter, setUserFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
   const [pendingSave, setPendingSave] = useState<any | null>(null);
   const [pendingName, setPendingName] = useState<string>("");
   const { toast } = useToast();
@@ -357,6 +359,21 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                setRefreshing(true);
+                await fetchProposals();
+                setRefreshing(false);
+                toast({ title: "Güncellendi", description: "Teklifler yenilendi." });
+              }}
+              disabled={refreshing}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Güncelle</span>
+            </Button>
             <button
               onClick={toggleTheme}
               aria-label="Tema değiştir"
