@@ -223,6 +223,7 @@ export default function HomePage() {
       return;
     }
     setProposals((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus } : x)));
+    if (newStatus === "approved") playCoinsSound();
     notify(
       newStatus === "approved" ? "Teklif onaylandı" : "Onay kaldırıldı",
       `${p.customerName} teklifi ${newStatus === "approved" ? "onaylandı" : "taslağa alındı"}.`,
