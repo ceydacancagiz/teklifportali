@@ -70,25 +70,27 @@ export function playCoinsSound() {
   if (!audio) return;
 
   const master = audio.createGain();
-  master.gain.value = 0.5;
+  master.gain.value = 0.55;
   master.connect(audio.destination);
 
   const now = audio.currentTime + 0.02;
-  const coins = 7;
+  const coins = 16;
 
   for (let c = 0; c < coins; c++) {
-    const start = now + c * (0.05 + Math.random() * 0.07);
-    const freq = 1600 + Math.random() * 1600;
-    // each coin bounces a few times, faster and quieter
+    // dense at the start, thinning out like a handful of coins spilling
+    const spread = Math.pow(c / coins, 1.35) * 1.1;
+    const start = now + spread + Math.random() * 0.05;
+    const freq = 1500 + Math.random() * 2200;
     let t = start;
-    let g = 0.22 + Math.random() * 0.1;
-    let gap = 0.09 + Math.random() * 0.06;
-    const bounces = 3 + Math.floor(Math.random() * 3);
+    let g = (0.2 + Math.random() * 0.12) * (1 - c / (coins * 1.6));
+    let gap = 0.07 + Math.random() * 0.06;
+    const bounces = 3 + Math.floor(Math.random() * 4);
     for (let b = 0; b < bounces; b++) {
-      clink(audio, t, freq * (1 + b * 0.03), g, master);
+      clink(audio, t, freq * (1 + b * 0.04), Math.max(g, 0.02), master);
       t += gap;
-      gap *= 0.62;
-      g *= 0.6;
+      gap *= 0.6;
+      g *= 0.62;
     }
   }
 }
+
