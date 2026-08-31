@@ -44,6 +44,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCurrentUser, setCurrentUser } from "@/hooks/useCurrentUser";
 import { useTheme } from "@/hooks/useTheme";
 import { notify, requestNotificationPermission, notificationsSupported } from "@/lib/notifications";
+import { playCoinsSound } from "@/lib/sounds";
 import avasyaLogo from "@/assets/avasya-logo.png";
 
 export default function HomePage() {
@@ -223,6 +224,7 @@ export default function HomePage() {
       return;
     }
     setProposals((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus } : x)));
+    if (newStatus === "approved") playCoinsSound();
     notify(
       newStatus === "approved" ? "Teklif onaylandı" : "Onay kaldırıldı",
       `${p.customerName} teklifi ${newStatus === "approved" ? "onaylandı" : "taslağa alındı"}.`,
