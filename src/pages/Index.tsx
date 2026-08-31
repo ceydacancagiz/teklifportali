@@ -86,9 +86,38 @@ export default function HomePage() {
     setLoading(false);
   };
 
+  const fetchRef = useRef(fetchProposals);
+  fetchRef.current = fetchProposals;
+
   useEffect(() => {
-    fetchProposals();
+    fetchRef.current();
+
+    // Live updates: refetch whenever the DB changes
+    const channel = supabase
+      .channel("proposals-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "proposals" }, () => {
+        fetchRef.current();
+      })
+      .subscribe();
+
+    // Refetch when the app/tab regains focus or becomes visible again
+    const refresh = () => {
+      if (document.visibilityState === "visible") fetchRef.current();
+    };
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+
+    // Safety net polling while the app is visible
+    const interval = window.setInterval(refresh, 20000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+      window.clearInterval(interval);
+    };
   }, []);
+
 
   // When a profile is selected, auto-filter to that user's proposals.
   // Selecting "Profili temizle" (currentUser = null) resets to all.
