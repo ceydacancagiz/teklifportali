@@ -97,24 +97,58 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
     }
   };
 
+  const parseQuantityValue = (raw?: string): number | null => {
+    if (!raw) return null;
+    let text = raw.replace(/\s/g, "").replace(/[^\d.,-]/g, "");
+    if (!text || !/\d/.test(text)) return null;
+    // 1.234,56 -> 1234.56 ; 1,234.56 -> 1234.56 ; 1,5 -> 1.5
+    if (text.includes(",") && text.includes(".")) {
+      if (text.lastIndexOf(",") > text.lastIndexOf(".")) {
+        text = text.replace(/\./g, "").replace(",", ".");
+      } else {
+        text = text.replace(/,/g, "");
+      }
+    } else if (text.includes(",")) {
+      text = text.replace(",", ".");
+    }
+    const value = parseFloat(text);
+    if (!Number.isFinite(value) || value <= 0) return null;
+    return Math.round(value * 100) / 100;
+  };
+
   const handleKitListPaste = (itemId: string, e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
     const pastedText = e.clipboardData.getData("text");
-    const rows = pastedText.split("\n").filter((row) => row.trim());
+    const rows = pastedText.split(/\r?\n/).filter((row) => row.trim());
 
-    // Sadece ilk 3 sütun esas alınır: Modül | Açıklama | Adet
-    const parsedItems: KitListItem[] = rows.map((row) => {
-      const columns = row.split("\t");
-      const module = columns[0]?.trim() || "";
-      const description = columns[1]?.trim() || "";
-      const quantity = parseInt(columns[2]?.trim()) || 1;
-      return { module, description, sku: "", taxType: "", quantity };
-    }).filter((item) => item.module || item.description);
+    // Modül | Açıklama | Adet — adet sütunu boşsa satırın sonundan ilk sayı bulunur
+    const parsedItems: KitListItem[] = rows
+      .map((row) => {
+        const columns = (row.includes("\t") ? row.split("\t") : row.split(/\s{2,}/)).map((c) => c.trim());
+        const module = columns[0] || "";
+        const description = columns[1] || "";
+
+        let quantity = parseQuantityValue(columns[2]);
+        if (quantity === null) {
+          // sağdan sola tara: son sayısal hücreyi adet kabul et
+          for (let i = columns.length - 1; i >= 2; i--) {
+            const parsed = parseQuantityValue(columns[i]);
+            if (parsed !== null) {
+              quantity = parsed;
+              break;
+            }
+          }
+        }
+
+        return { module, description, sku: "", taxType: "", quantity: quantity ?? 1 };
+      })
+      .filter((item) => item.module || item.description);
 
     if (parsedItems.length > 0) {
       updateLineItem(itemId, "kitList", parsedItems);
     }
   };
+
 
   const clearKitList = (itemId: string) => {
     updateLineItem(itemId, "kitList", []);
