@@ -64,10 +64,10 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       {item.quantity}
                     </td>
                     <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "right", verticalAlign: "middle", lineHeight: 1.5 }}>
-                      {formatCurrency(item.unitPrice)}
+                      {item.unitPrice ? formatCurrency(item.unitPrice) : ""}
                     </td>
                     <td style={{ padding: tablePadding, fontSize: `${tableFontSize}px`, textAlign: "right", verticalAlign: "middle", lineHeight: 1.5 }}>
-                      {formatCurrency(item.quantity * item.unitPrice)}
+                      {item.unitPrice ? formatCurrency(item.quantity * item.unitPrice) : ""}
                     </td>
                   </tr>
                 ))}
@@ -98,7 +98,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       lineHeight: "36px",
                       boxSizing: "border-box",
                     }}>
-                      {formatCurrency(calculateTotal())}
+                      {calculateTotal() ? formatCurrency(calculateTotal()) : ""}
                     </div>
                   </td>
                 </tr>
