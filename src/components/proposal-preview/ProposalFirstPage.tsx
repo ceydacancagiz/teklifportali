@@ -98,7 +98,7 @@ export default function ProposalFirstPage({ data, formatCurrency, calculateTotal
                       lineHeight: "36px",
                       boxSizing: "border-box",
                     }}>
-                      {formatCurrency(calculateTotal())}
+                      {calculateTotal() ? formatCurrency(calculateTotal()) : ""}
                     </div>
                   </td>
                 </tr>
