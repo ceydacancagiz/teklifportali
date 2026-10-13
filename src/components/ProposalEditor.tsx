@@ -37,9 +37,9 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       "Göstermiş olduğunuz ilgi ve güven için teşekkür ederiz. Talep etmiş olduğunuz ürün/hizmetlerimize yönelik teklifimiz aşağıda değerlendirmelerinize sunulmuştur. Teklifimiz hakkında her türlü soru ve görüşlerinizi bekler, iyi çalışmalar dileriz. Saygılarımızla,",
     paymentTerms:
       proposal?.paymentTerms ||
-      "Teklifimizde yer alan fiyatlar US Doları cinsinden verilmiş olup, KDV dahil değildir.\nDöviz dönüşümlerine ödeme tarihindeki T.C.M.B Döviz satış kuru kullanılacaktır.\nTeklifimizde yer alan hizmetlerin faturası hizmetin tamamlanmasını müteakip tek seferde fatura edilecek olup, ödeme vadesi 30 gündür.",
+      "Teklifimizde yer alan fiyatlar US Doları cinsinden verilmiş olup, KDV dahil değildir.\nDöviz dönüşümlerinde ödeme tarihindeki T.C.M.B Döviz satış kuru kullanılacaktır.\nTeklifimizde yer alan hizmetlerin faturası hizmetin tamamlanmasını müteakip tek seferde fatura edilecek olup, ödeme vadesi 30 gündür.",
     validityPeriod:
-      proposal?.validityPeriod || "Teklifimiz gizli olup, 15 gün süre ile geçerlidir",
+      proposal?.validityPeriod || "Teklifimiz gizli olup, 15 gün süre ile geçerlidir.",
     footerText: proposal?.footerText || "",
     additionalNotes: proposal?.additionalNotes || "",
     contactName: proposal?.contactName || "",
@@ -50,7 +50,7 @@ export default function ProposalEditor({ onBack, onSave, proposal }: Props) {
       proposal?.companyName || "AVASYA TEKNOLOJİ SANAYİ VE DIŞ TİC. LTD ŞTİ",
     phone1: proposal?.phone1 || "+90 216 415 45 45",
     phone2: proposal?.phone2 || "+90 216 364 59 59",
-    email: proposal?.email || "bilgi@avasya.com.tr",
+    email: proposal?.email || "kurumsal@avasya.com.tr",
     website: proposal?.website || "www.avasya.com.tr",
     address:
       proposal?.address ||
